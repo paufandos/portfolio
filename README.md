@@ -1,10 +1,19 @@
 # paufandos.github.io
 
-Pau Fandos's personal website: a static page in Spanish (`/`) and English (`/en/`), with plain HTML and CSS and no build step.
+Pau Fandos's personal website: one static page in Spanish (`/`) and English (`/en/`), plain HTML and CSS with a few lines of JavaScript, no build step.
 
 - `index.html` and `en/index.html`: the two language versions; keep them in sync.
-- `assets/`: stylesheet, a small script (cursor spotlight and active section in the side navigation), favicon and images.
+- `assets/`: stylesheet, the badge tilt script, the self-hosted Archivo font (SIL OFL, `assets/fonts/OFL.txt`), favicon and images.
 - `Portfolio/`: redirects the old `paufandos.github.io/Portfolio/` URL to the home page.
-- `.github/workflows/pages.yml`: deploys to GitHub Pages on every push to `main`.
+- `404.html`: page for missing paths.
+- `DESIGN.md`: the visual system.
+- `tests/`: Playwright end-to-end, accessibility (axe) and visual tests on desktop, laptop, iPad, iPhone 15, iPhone SE and Pixel 7.
+- `.github/workflows/pages.yml`: runs the end-to-end tests and deploys to GitHub Pages on every push to `main`.
 
-Preview locally with `python3 -m http.server` and open `http://localhost:8000`.
+```sh
+npm install
+npm run serve          # http://127.0.0.1:4173
+npm test               # all tests
+npm run test:e2e       # end-to-end and accessibility only
+npm run test:update    # refresh visual baselines after an intended design change
+```

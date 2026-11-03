@@ -1,38 +1,32 @@
-// Cursor spotlight and active section in the side navigation.
+// The accreditation follows the pointer a little, like a badge hanging from its lanyard.
 (() => {
+  const badge = document.querySelector(".badge");
+  if (!badge) return;
   const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-  const finePointer = window.matchMedia("(pointer: fine)").matches;
+  const finePointer = window.matchMedia("(hover: hover) and (pointer: fine)").matches;
+  if (reduceMotion || !finePointer) return;
 
-  if (!reduceMotion && finePointer) {
-    let frame = 0;
-    window.addEventListener("pointermove", (event) => {
+  const hero = badge.closest(".hero");
+  let frame = 0;
+
+  badge.addEventListener("animationend", () => {
+    badge.style.animation = "none";
+    badge.style.transition = "transform 0.6s cubic-bezier(0.22, 1, 0.36, 1)";
+
+    hero.addEventListener("pointermove", (event) => {
       cancelAnimationFrame(frame);
       frame = requestAnimationFrame(() => {
-        document.body.style.setProperty("--x", `${event.clientX}px`);
-        document.body.style.setProperty("--y", `${event.clientY}px`);
+        const box = badge.getBoundingClientRect();
+        const dx = (event.clientX - (box.left + box.width / 2)) / window.innerWidth;
+        const dy = (event.clientY - (box.top + box.height / 2)) / window.innerHeight;
+        badge.style.setProperty("--tilt-y", `${(dx * 14).toFixed(2)}deg`);
+        badge.style.setProperty("--tilt-x", `${(-dy * 10).toFixed(2)}deg`);
       });
     });
-  }
 
-  const links = [...document.querySelectorAll(".toc a")];
-  const sections = links
-    .map((link) => document.querySelector(link.getAttribute("href")))
-    .filter(Boolean);
-  if (!sections.length || !("IntersectionObserver" in window)) return;
-
-  const setActive = (id) => {
-    links.forEach((link) => {
-      link.setAttribute("aria-current", link.getAttribute("href") === `#${id}` ? "true" : "false");
+    hero.addEventListener("pointerleave", () => {
+      badge.style.setProperty("--tilt-x", "0deg");
+      badge.style.setProperty("--tilt-y", "0deg");
     });
-  };
-
-  const observer = new IntersectionObserver(
-    (entries) => {
-      const visible = entries.filter((entry) => entry.isIntersecting);
-      if (visible.length) setActive(visible[0].target.id);
-    },
-    { rootMargin: "-30% 0px -60% 0px" }
-  );
-  sections.forEach((section) => observer.observe(section));
-  setActive(sections[0].id);
+  }, { once: true });
 })();

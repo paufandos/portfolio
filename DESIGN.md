@@ -1,0 +1,30 @@
+# Design
+
+The page is Pau's competitor accreditation at Spain Skills 2024: the magenta panels of his booth, his orange hoodie, the white desk and the concrete floor. It refuses the developer-portfolio template (dark sidebar, cards, tech pills).
+
+## Tokens
+
+| Token | Value | Use |
+|---|---|---|
+| `--magenta` | `#c2125a` | hero and competition fields; white text on it |
+| `--magenta-deep` | `#8e0d42` | hover on magenta buttons |
+| `--orange` | `#e0571a` | fandOS band (ink text), lanyard, badge number, underline accent |
+| `--ink` | `#17110f` | text, top bar, agent-kit band |
+| `--paper` | `#f3f1f0` | page ground |
+| `--concrete` | `#6a5f5a` | secondary text, tile misses |
+| `--rule` | `#d9d3d0` | hairlines between rows |
+
+Colour is committed at band scale (whole sections in magenta, orange or ink), never scattered as accents. Orange never sits on magenta as text.
+
+## Type
+
+Archivo variable (width 62–125 %, weight 100–900), self-hosted. Display: weight 900 at 62–75 % width, uppercase for section titles, real case for product names (fandOS, agent-kit). Body: 17 px at 100 % width. Monospace only for real tool output.
+
+## Components
+
+- **Badge:** white card with an ink header, hanging from an orange lanyard; swings in once on load and tilts with the pointer on desktop; no motion with reduced motion. On phones it drops the details and barcode so the name and the LinkedIn action fit the first screen.
+- **Results rows:** big condensed years on the left, company, role, text and stack on the right, separated by hairlines under a 3 px ink rule.
+- **Project bands:** full-width sections, each in its own material (orange, ink, paper) with a real demonstration (feature list, terminal output, game board).
+- **Buttons:** square, 48–52 px tall, white on magenta, magenta on paper, outlined as secondary.
+
+No eyebrow labels, gradients, glass, glows or pills.

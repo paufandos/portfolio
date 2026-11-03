@@ -1,0 +1,16 @@
+{
+  "name": "paufandos.github.io",
+  "private": true,
+  "description": "Pau Fandos's personal website",
+  "scripts": {
+    "serve": "node tests/server.mjs",
+    "test": "playwright test",
+    "test:e2e": "playwright test --grep-invert @visual",
+    "test:visual": "playwright test --grep @visual",
+    "test:update": "playwright test --grep @visual --update-snapshots"
+  },
+  "devDependencies": {
+    "@axe-core/playwright": "4.10.2",
+    "@playwright/test": "1.60.0"
+  }
+}
