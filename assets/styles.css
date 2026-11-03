@@ -16,11 +16,14 @@
   unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C4, U+2113, U+2C60-2C7F, U+A720-A7FF;
 }
 
-/* The booth: magenta panels, the orange hoodie, the white desk, the concrete floor. */
+/* Warm ink fields, the orange of the Spain Skills hoodie, the white desk, the concrete floor. */
 :root {
-  --magenta: #c2125a;
-  --magenta-deep: #8e0d42;
-  --magenta-shard: #d6236c;
+  --field: #211916;
+  --field-deep: #0f0b0a;
+  --shard-light: #2e2420;
+  --shard-dark: #17110f;
+  --orange-text: #a3390b;
+  --on-field-soft: rgba(255, 255, 255, 0.86);
   --orange: #e0571a;
   --orange-deep: #b8410c;
   --paper: #f3f1f0;
@@ -73,8 +76,8 @@ a {
 }
 
 ::selection {
-  background: var(--magenta);
-  color: var(--white);
+  background: var(--orange);
+  color: var(--ink);
 }
 
 :focus-visible {
@@ -172,10 +175,18 @@ html {
 .hero {
   position: relative;
   display: grid;
-  background: var(--magenta);
+  background: var(--field);
   color: var(--white);
   isolation: isolate;
   overflow: clip;
+}
+
+.shard-light {
+  fill: var(--shard-light);
+}
+
+.shard-dark {
+  fill: var(--shard-dark);
 }
 
 .shards {
@@ -214,7 +225,7 @@ html {
   background: var(--white);
   color: var(--ink);
   border-radius: 14px;
-  box-shadow: 0 2px 4px rgba(23, 17, 15, 0.18), 0 22px 40px -12px rgba(60, 4, 25, 0.55);
+  box-shadow: 0 2px 4px rgba(23, 17, 15, 0.18), 0 22px 40px -12px rgba(0, 0, 0, 0.6);
   transform-origin: 50% -40px;
   transform: perspective(900px) rotateX(var(--tilt-x)) rotateY(var(--tilt-y)) rotate(-2.5deg);
   animation: swing 1.6s cubic-bezier(0.22, 1, 0.36, 1) both;
@@ -251,8 +262,7 @@ html {
 .badge-head {
   display: flex;
   align-items: flex-end;
-  justify-content: space-between;
-  gap: 12px;
+  gap: 14px;
   padding: 34px 24px 16px;
   border-radius: 14px 14px 0 0;
   background: var(--ink);
@@ -260,6 +270,7 @@ html {
 }
 
 .badge-head span {
+  padding-bottom: 4px;
   font-weight: 800;
   font-stretch: 75%;
   font-size: 15px;
@@ -391,7 +402,7 @@ html {
 
 .btn-outline:hover {
   background: var(--white);
-  color: var(--magenta);
+  color: var(--ink);
 }
 
 .hero-photo {
@@ -552,7 +563,7 @@ html {
   font-size: 15px;
   letter-spacing: 0.06em;
   text-transform: uppercase;
-  color: var(--magenta);
+  color: var(--orange-text);
 }
 
 .sheet dd {
@@ -779,14 +790,14 @@ html {
 
 .competition {
   position: relative;
-  background: var(--magenta);
+  background: var(--field);
   color: var(--white);
   isolation: isolate;
   overflow: hidden;
 }
 
 .competition .band-head p {
-  color: #fbe3ec;
+  color: var(--on-field-soft);
 }
 
 .medals {
@@ -866,7 +877,7 @@ html {
   display: block;
   font-weight: 500;
   font-size: 15px;
-  color: #fbe3ec;
+  color: var(--on-field-soft);
 }
 
 .studies .mark {
@@ -898,13 +909,13 @@ html {
   color: var(--ink-soft);
 }
 
-.btn-magenta {
-  background: var(--magenta);
+.btn-field {
+  background: var(--field);
   color: var(--white);
 }
 
-.btn-magenta:hover {
-  background: var(--magenta-deep);
+.btn-field:hover {
+  background: var(--field-deep);
 }
 
 .btn-ink {
