@@ -23,9 +23,9 @@ Archivo variable (width 62–125 %, weight 100–900), self-hosted. Display: wei
 
 ## Components
 
-- **Badge:** white card with an ink header carrying the years of experience, hanging from an orange lanyard; swings in once on load and tilts with the pointer on desktop; no motion with reduced motion. On phones it drops the details and barcode so the name and the LinkedIn action fit the first screen.
+- **Badge:** white card with an ink header carrying the years of experience, hanging from an orange lanyard; swings in once on load and tilts with the pointer on desktop; no motion with reduced motion. On phones it drops the details and barcode, and on desktop screens under 860 px tall the barcode, so the name and the LinkedIn action fit the first screen.
 - **Results rows:** big condensed years on the left, company, role, text and stack on the right, separated by hairlines under a 3 px ink rule.
-- **Project bands:** full-width sections, each in its own material (orange, ink, paper) with a real demonstration (feature list, terminal output, game board).
+- **Project bands:** full-width sections, each in its own material (orange, ink, paper) with a real demonstration: fandOS screens in ink phone frames (four in a row from 600 px, staggered), terminal output, game board.
 - **Buttons:** square, 48–52 px tall, white on ink, ink on paper, outlined as secondary.
 
 No eyebrow labels, gradients, glass, glows or pills.

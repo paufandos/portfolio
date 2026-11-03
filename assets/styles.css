@@ -711,6 +711,37 @@ html {
   font-size: 15px;
 }
 
+.project .phones {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: clamp(16px, 3vw, 32px);
+  margin-top: clamp(40px, 6vw, 72px);
+}
+
+@media (min-width: 600px) {
+  .project .phones {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    align-items: start;
+  }
+
+  .phone:nth-child(even) {
+    margin-top: clamp(24px, 4vw, 56px);
+  }
+}
+
+.phone {
+  margin: 0;
+  padding: 3.2%;
+  border-radius: 15% / 7%;
+  background: var(--ink);
+  box-shadow: 0 2px 4px rgba(23, 17, 15, 0.25), 0 28px 48px -18px rgba(23, 17, 15, 0.55);
+}
+
+.phone img {
+  width: 100%;
+  border-radius: 12% / 5.6%;
+}
+
 .project-agents {
   background: var(--ink);
   color: var(--white);
@@ -940,6 +971,25 @@ footer .wrap {
   flex-wrap: wrap;
   justify-content: space-between;
   gap: 8px 24px;
+}
+
+/* Short desktop screens: the badge drops its barcode so the actions stay in the first screen. */
+@media (min-width: 900px) and (max-height: 860px) {
+  .lanyard {
+    height: 32px;
+  }
+
+  .badge-foot {
+    display: none;
+  }
+
+  .badge-body {
+    padding-bottom: 22px;
+  }
+
+  .hero-copy {
+    margin-top: 28px;
+  }
 }
 
 /* Phones: the accreditation shrinks so the name and the LinkedIn action fit in the first screen. */

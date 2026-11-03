@@ -54,7 +54,8 @@ for (const p of pages) {
       await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight));
       const broken = await page.evaluate(async () => {
         const images = [...document.images];
-        await Promise.all(images.map((image) => (image.complete ? null : image.decode().catch(() => null))));
+        images.forEach((image) => (image.loading = "eager"));
+        await Promise.all(images.map((image) => image.decode().catch(() => null)));
         return images.filter((image) => image.naturalWidth === 0).map((image) => image.src);
       });
       expect(broken).toEqual([]);
