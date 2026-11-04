@@ -75,7 +75,7 @@ for (const p of pages) {
       }
       for (const link of await page.locator('a[target="_blank"]').all()) {
         await expect(link).toHaveAttribute("rel", /noopener/);
-        await expect(link).toHaveAttribute("href", /^https:\/\/(www\.linkedin\.com\/in\/paufandos\/|github\.com\/paufandos)$/);
+        await expect(link).toHaveAttribute("href", /^https:\/\/(www\.linkedin\.com\/in\/paufandos\/|github\.com\/paufandos(?:\/AdivinaLaPalabra)?)$/);
       }
       await expect(page.locator('a[href^="mailto:"]')).toHaveCount(0);
     });
