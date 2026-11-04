@@ -80,6 +80,18 @@ for (const p of pages) {
       await expect(page.locator('a[href^="mailto:"]')).toHaveCount(0);
     });
 
+    test("offers a downloadable PDF CV in the page language", async ({ page, request }) => {
+      await open(page, p.path);
+      const link = page.locator(".cv-download");
+      await expect(link).toHaveAttribute("href", new RegExp(`pau-fandos-cv-${p.lang}\\.pdf$`));
+      await expect(link).toHaveAttribute("download", new RegExp(`CV-${p.lang.toUpperCase()}\\.pdf$`));
+      const href = await link.getAttribute("href");
+      const response = await request.get(new URL(href!, page.url()).href);
+      expect(response.status()).toBe(200);
+      expect(response.headers()["content-type"]).toBe("application/pdf");
+      expect((await response.body()).subarray(0, 5).toString()).toBe("%PDF-");
+    });
+
     test("switches language", async ({ page }) => {
       await open(page, p.path);
       await page.locator(".nav .lang").click();

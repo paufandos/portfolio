@@ -4,6 +4,7 @@ Pau Fandos's personal website, published at [paufandos.com](https://paufandos.co
 
 - `index.html` and `en/index.html`: the two language versions; keep them in sync.
 - `assets/`: stylesheet, the badge tilt script, the self-hosted Archivo font (SIL OFL, `assets/fonts/OFL.txt`), favicon and images.
+- `assets/cv/`: downloadable CV PDFs in Spanish and English, without phone number or email address; each page links to its matching language.
 - `Portfolio/`: redirects the old `/Portfolio/` path to the home page.
 - `CNAME`, `robots.txt` and `sitemap.xml`: custom domain and search engine files.
 - `404.html`: page for missing paths.

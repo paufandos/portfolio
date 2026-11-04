@@ -13,6 +13,7 @@ const types = {
   ".svg": "image/svg+xml",
   ".jpg": "image/jpeg",
   ".png": "image/png",
+  ".pdf": "application/pdf",
   ".woff2": "font/woff2",
 };
 

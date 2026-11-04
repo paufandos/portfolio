@@ -755,6 +755,13 @@ html {
   color: var(--orange);
 }
 
+.tool-example { min-width: 0; }
+
+.project-agents .terminal-note {
+  margin-bottom: 12px;
+  font-size: 14px;
+}
+
 .terminal {
   margin: 0;
   max-width: 100%;
