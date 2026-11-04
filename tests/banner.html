@@ -1,0 +1,24 @@
+<!doctype html>
+<html lang="es"><head><meta charset="utf-8">
+<link rel="stylesheet" href="../assets/styles.css">
+<style>
+html,body{margin:0;background:var(--field)}
+.banner{position:relative;width:var(--w);height:var(--h);overflow:hidden;background:var(--field);color:#fff;font-family:var(--font);isolation:isolate}
+.banner svg{position:absolute;inset:0;width:100%;height:100%;z-index:-1}
+.inner{position:absolute;right:var(--pad);top:50%;transform:translateY(-50%);text-align:right}
+.name{font-weight:900;font-stretch:65%;font-size:var(--fs);line-height:.86;text-transform:uppercase;letter-spacing:-.01em}
+.role{margin-top:14px;font-weight:700;font-stretch:85%;font-size:calc(var(--fs)*.34)}
+.role em{font-style:normal;text-decoration:underline;text-decoration-color:var(--orange);text-decoration-thickness:.14em;text-underline-offset:.12em;text-decoration-skip-ink:none}
+.url{margin-top:12px;font-weight:600;font-size:calc(var(--fs)*.22);color:rgba(255,255,255,.75)}
+.bar{position:absolute;left:0;bottom:0;width:100%;height:10px;background:var(--orange)}
+</style></head>
+<body>
+<div class="banner" id="b">
+<svg viewBox="0 0 1584 396" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+<g class="shard-light"><polygon points="520,30 600,50 540,170"/><polygon points="760,240 860,280 780,380"/><polygon points="980,20 1050,40 1000,130"/><polygon points="300,250 360,300 280,360"/></g>
+<g class="shard-dark"><polygon points="640,200 690,215 650,280"/><polygon points="880,100 930,120 890,190"/></g>
+</svg>
+<div class="inner"><div class="name">Pau Fandos</div><div class="role">Desarrollador de software · <em>IA en sistemas empresariales</em></div><div class="url">Java · Spring · Angular — paufandos.com</div></div>
+<div class="bar"></div>
+</div>
+</body></html>
