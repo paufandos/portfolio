@@ -10,6 +10,7 @@ Pau Fandos's personal website, published at [paufandos.com](https://paufandos.co
 - `404.html`: page for missing paths.
 - `DESIGN.md`: the visual system.
 - `tests/`: Playwright end-to-end, accessibility (axe) and visual tests on desktop, laptop, iPad, iPhone 15, iPhone SE and Pixel 7.
+- `tests/banner.mjs`: renders the LinkedIn and X banners from `tests/banner.html` (`node tests/banner.mjs <out-dir>`).
 - `.github/workflows/pages.yml`: runs the end-to-end tests and deploys to GitHub Pages on every push to `main`.
 
 ```sh
