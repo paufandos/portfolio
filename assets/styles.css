@@ -795,6 +795,10 @@ html {
   color: var(--concrete);
 }
 
+.project-game .btn {
+  margin: 8px 0 28px;
+}
+
 .board {
   display: grid;
   grid-template-columns: repeat(5, minmax(0, 1fr));

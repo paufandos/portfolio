@@ -80,6 +80,14 @@ for (const p of pages) {
       await expect(page.locator('a[href^="mailto:"]')).toHaveCount(0);
     });
 
+    test("links to the public code of Adivina la palabra", async ({ page }) => {
+      await open(page, p.path);
+      const link = page.locator(".project-game a.btn");
+      await expect(link).toHaveCount(1);
+      await expect(link).toHaveAttribute("href", "https://github.com/paufandos/AdivinaLaPalabra");
+      await expect(link).toContainText("GitHub");
+    });
+
     test("offers a downloadable PDF CV in the page language", async ({ page, request }) => {
       await open(page, p.path);
       const link = page.locator(".cv-download");
