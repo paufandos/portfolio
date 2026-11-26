@@ -1,6 +1,6 @@
-# portfolio
+# Pau Fandos
 
-Pau Fandos's personal website, published at [paufandos.com](https://paufandos.com): one static page in Spanish (`/`) and English (`/en/`), plain HTML and CSS with a few lines of JavaScript, no build step.
+My personal website, published at [paufandos.com](https://paufandos.com): one static page in Spanish (`/`) and English (`/en/`), plain HTML and CSS with a few lines of JavaScript, no build step.
 
 - `index.html` and `en/index.html`: the two language versions; keep them in sync.
 - `assets/`: stylesheet, the badge tilt script, the self-hosted Archivo font (SIL OFL, `assets/fonts/OFL.txt`), favicon and images.
