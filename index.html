@@ -1,0 +1,959 @@
+<!doctype html>
+<html lang="ca">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow, noarchive">
+<meta name="referrer" content="no-referrer">
+<meta name="theme-color" content="#fcfcf7" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#1c2c25" media="(prefers-color-scheme: dark)">
+<title>Examen sorpresa de Tiixer</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Andika:ital,wght@0,400;0,700;1,400&family=Caveat:wght@500;700&display=swap">
+<style>
+/* Layout: one notebook page per screen, single column on cuadrovía paper with a red margin line.
+   Blue ink for the text, red pen for Pau's corrections, gomets for the clues.
+   Light theme = school notebook; dark theme = blackboard. */
+:root {
+  --paper: #fcfcf7;
+  --grid: rgba(52, 98, 178, .13);
+  --rule: rgba(31, 45, 92, .28);
+  --margin: #e0675d;
+  --ink: #1f2d5c;
+  --ink-soft: #56618a;
+  --pen: #cc2c24;
+  --pen-soft: rgba(204, 44, 36, .09);
+  --card: #ffffff;
+  --frame: #ffffff;
+  --frame-ink: #1f2d5c;
+  --tape: rgba(244, 211, 94, .75);
+  --shadow: rgba(31, 45, 92, .18);
+  --g-yellow: #f2b705;
+  --g-green: #2e9e4f;
+  --g-blue: #2b74d1;
+  --g-pink: #e2508a;
+  --hand: "Caveat", "Bradley Hand", "Segoe Print", cursive;
+  --text: "Andika", "Atkinson Hyperlegible", system-ui, -apple-system, sans-serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --paper: #1c2c25;
+    --grid: rgba(235, 245, 238, .05);
+    --rule: rgba(238, 243, 236, .26);
+    --margin: rgba(255, 138, 122, .45);
+    --ink: #eef3ec;
+    --ink-soft: #b3c2b6;
+    --pen: #ff8d7d;
+    --pen-soft: rgba(255, 141, 125, .14);
+    --card: #243830;
+    --tape: rgba(244, 211, 94, .4);
+    --shadow: rgba(0, 0, 0, .45);
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --paper: #1c2c25;
+  --grid: rgba(235, 245, 238, .05);
+  --rule: rgba(238, 243, 236, .26);
+  --margin: rgba(255, 138, 122, .45);
+  --ink: #eef3ec;
+  --ink-soft: #b3c2b6;
+  --pen: #ff8d7d;
+  --pen-soft: rgba(255, 141, 125, .14);
+  --card: #243830;
+  --tape: rgba(244, 211, 94, .4);
+  --shadow: rgba(0, 0, 0, .45);
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+html { -webkit-text-size-adjust: 100%; }
+body { margin: 0; }
+body {
+  background-color: var(--paper);
+  background-image:
+    linear-gradient(var(--grid) 1px, transparent 1px),
+    linear-gradient(90deg, var(--grid) 1px, transparent 1px);
+  background-size: 24px 24px;
+  color: var(--ink);
+  font-family: var(--text);
+  font-size: 17px;
+  line-height: 1.55;
+}
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0 0 auto;
+  height: env(safe-area-inset-top, 0px);
+  z-index: 10;
+  background: var(--paper);
+}
+p { margin: 0; }
+h1, h2, h3 { margin: 0; text-wrap: balance; }
+h2 { font-size: 1.7rem; line-height: 1.2; font-weight: 700; }
+h3 { font-size: 1.15rem; line-height: 1.3; font-weight: 700; }
+[tabindex="-1"]:focus { outline: none; }
+a { color: var(--ink); text-decoration-color: var(--pen); text-underline-offset: 3px; }
+
+.wrap {
+  max-width: 560px;
+  margin: 0 auto;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+main.wrap { padding-block: 22px 64px; }
+
+/* Top bar */
+.bar {
+  position: sticky;
+  top: env(safe-area-inset-top, 0px);
+  z-index: 5;
+  background: var(--paper);
+  border-bottom: 1px solid var(--rule);
+}
+.bar-in { display: flex; align-items: center; gap: 8px; padding-block: 6px; }
+.bar-back {
+  background: none; border: 0; color: var(--ink); cursor: pointer;
+  font: 700 .95rem/1 var(--text); padding: 10px 6px 10px 0; min-height: 44px;
+}
+.bar-back:disabled { opacity: .35; cursor: default; }
+.bar-label { flex: 1; min-width: 0; text-align: center; font-family: var(--hand); font-size: 1.4rem; line-height: 1.1; }
+.bar-clues {
+  display: flex; align-items: center; gap: 5px; cursor: pointer;
+  background: var(--card); border: 1.5px solid var(--rule); border-radius: 999px;
+  padding: 0 10px; min-height: 38px;
+}
+.dot { width: 14px; height: 14px; border-radius: 50%; border: 1.5px dashed var(--ink-soft); }
+.dot.on { border: 0; box-shadow: inset 0 -2px 0 rgba(0, 0, 0, .15); }
+.bar-progress { height: 3px; background: var(--pen); transform-origin: left center; transform: scaleX(0); transition: transform .4s ease; }
+.panel { padding-block: 4px 16px; display: grid; gap: 10px; }
+.panel-title { font-family: var(--hand); font-size: 1.45rem; color: var(--pen); }
+
+/* Screens */
+.screen {
+  border-left: 2px solid var(--margin);
+  padding-left: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+.screen.enter { animation: turn .45s cubic-bezier(.2, .7, .2, 1) both; }
+@keyframes turn { from { opacity: .3; transform: translateY(12px); } to { opacity: 1; transform: none; } }
+
+.eyebrow {
+  font-size: .78rem; font-weight: 700; letter-spacing: .09em;
+  text-transform: uppercase; color: var(--ink-soft);
+}
+.lead { font-size: 1.08rem; color: var(--ink-soft); }
+.pen-note {
+  color: var(--pen); font-family: var(--hand); font-size: 1.5rem; line-height: 1.22;
+  display: grid; gap: 8px; transform: rotate(-1deg); padding-block: 4px;
+}
+
+/* Cover */
+.cover h1 { font-family: var(--hand); font-weight: 700; font-size: clamp(2.7rem, 12vw, 3.6rem); line-height: .98; }
+.fields { display: grid; grid-template-columns: 1fr 1fr; gap: 12px 18px; margin: 0; }
+.fields div { border-bottom: 1.5px dotted var(--rule); padding-bottom: 2px; min-width: 0; }
+.fields dt { font-size: .72rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--ink-soft); }
+.fields dd { margin: 0; font-family: var(--hand); font-size: 1.75rem; line-height: 1.1; }
+
+/* Buttons */
+.actions { display: grid; gap: 10px; margin-top: 4px; }
+.btn {
+  width: 100%; min-height: 54px; padding: 14px 20px; cursor: pointer;
+  border-radius: 12px; border: 2px solid var(--ink);
+  font: 700 1.05rem/1.2 var(--text);
+}
+a.btn { display: flex; align-items: center; justify-content: center; text-align: center; text-decoration: none; }
+.btn.primary { background: var(--ink); color: var(--paper); }
+.btn.ghost { background: transparent; color: var(--ink); border-color: var(--rule); }
+.btn.small { min-height: 44px; padding: 10px 16px; font-size: .95rem; width: auto; }
+.btn:focus-visible, .opt:focus-visible, .bar-back:focus-visible, .bar-clues:focus-visible, .linkbtn:focus-visible {
+  outline: 3px solid var(--pen); outline-offset: 3px;
+}
+.linkbtn {
+  background: none; border: 0; padding: 8px 0; cursor: pointer; justify-self: center;
+  color: var(--ink-soft); font: 400 .95rem var(--text); text-decoration: underline; text-underline-offset: 3px;
+}
+
+/* Photos */
+.photos { display: grid; gap: 30px; padding-block: 12px 4px; }
+.photo {
+  margin: 0; position: relative; max-width: 100%;
+  background: var(--frame); padding: 10px 10px 12px;
+  box-shadow: 0 8px 20px var(--shadow), 0 1px 2px var(--shadow);
+}
+.photo:nth-child(odd) { transform: rotate(-1.3deg); }
+.photo:nth-child(even) { transform: rotate(1.1deg); }
+.photo::before {
+  content: ""; position: absolute; top: -12px; left: 50%;
+  width: 86px; height: 24px; margin-left: -43px;
+  background: var(--tape); transform: rotate(-3deg);
+}
+.photo img { display: block; width: 100%; height: auto; background: var(--grid); }
+.photo figcaption { font-family: var(--hand); font-size: 1.4rem; line-height: 1.18; color: var(--frame-ink); padding: 10px 4px 0; }
+.strip {
+  display: flex; gap: 20px; overflow-x: auto; scroll-snap-type: x mandatory;
+  padding: 18px 6px 22px; margin-inline: -6px; overscroll-behavior-x: contain;
+}
+.strip .photo { flex: 0 0 82%; scroll-snap-align: center; }
+.swipe { font-family: var(--hand); font-size: 1.35rem; color: var(--pen); }
+
+/* Questions */
+.opts { display: grid; gap: 10px; }
+.opt {
+  position: relative; display: flex; gap: 12px; align-items: baseline; text-align: left;
+  min-height: 56px; padding: 14px 44px 14px 16px; cursor: pointer;
+  background: var(--card); color: var(--ink);
+  border: 1.5px solid var(--rule); border-radius: 12px;
+  font: 400 1.06rem/1.35 var(--text);
+}
+.opt-l { font-family: var(--hand); font-size: 1.45rem; line-height: 1; color: var(--ink-soft); min-width: 1.3em; }
+.opt:disabled { cursor: default; }
+.opt:disabled:not(.right):not(.wrong) { opacity: .5; }
+.opt.wrong { opacity: .72; }
+.opt.wrong .opt-t { text-decoration: line-through; text-decoration-color: var(--pen); text-decoration-thickness: 2px; }
+.opt.right {
+  border-color: transparent;
+  box-shadow: 0 0 0 2.5px var(--pen);
+  border-radius: 255px 18px 225px 18px / 18px 225px 18px 255px;
+}
+.opt.right::after {
+  content: "✓"; position: absolute; right: 14px; top: 50%;
+  transform: translateY(-50%) rotate(8deg);
+  font-family: var(--hand); font-weight: 700; font-size: 2.1rem; color: var(--pen);
+}
+.feedback { font-family: var(--hand); font-size: 1.55rem; line-height: 1.2; color: var(--pen); min-height: 1.2em; }
+
+/* Clues */
+.clue {
+  display: flex; gap: 14px; align-items: center;
+  background: var(--card); border: 1.5px dashed var(--rule); border-radius: 14px; padding: 14px 16px;
+}
+.clue > div { min-width: 0; }
+.clue-label { font-size: .75rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--ink-soft); }
+.clue-text { font-size: 1.1rem; font-weight: 700; line-height: 1.35; }
+.gomet {
+  flex: 0 0 auto; width: 46px; height: 46px; border-radius: 50%;
+  display: grid; place-items: center; font: 700 1.1rem/1 var(--text); color: #fff;
+  box-shadow: inset 0 -3px 0 rgba(0, 0, 0, .16), 0 2px 5px var(--shadow);
+}
+.g-yellow { background: var(--g-yellow); color: #3b2c00; }
+.g-green { background: var(--g-green); }
+.g-blue { background: var(--g-blue); }
+.g-pink { background: var(--g-pink); }
+.pop .gomet { animation: stick .55s cubic-bezier(.3, 1.6, .5, 1) both; }
+@keyframes stick { from { transform: scale(.2) rotate(-40deg); } to { transform: none; } }
+.chuleta {
+  background: var(--card); border: 1.5px solid var(--rule); border-radius: 14px;
+  padding: 14px 16px; display: grid; gap: 10px;
+}
+.chuleta ol { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; }
+.chuleta li { display: flex; gap: 12px; align-items: center; }
+.chuleta li > span:last-child { min-width: 0; }
+.chuleta .gomet { width: 30px; height: 30px; font-size: .85rem; }
+.chuleta .locked { color: var(--ink-soft); font-style: italic; }
+.chuleta .locked .gomet { background: transparent; border: 1.5px dashed var(--ink-soft); box-shadow: none; color: var(--ink-soft); }
+
+/* Grade */
+.nota { align-items: center; text-align: center; }
+.stamp {
+  display: inline-block; padding: 8px 18px; border: 4px double var(--pen); border-radius: 6px;
+  color: var(--pen); font: 700 1.3rem/1.1 var(--text); letter-spacing: .14em; text-transform: uppercase;
+  transform: rotate(-8deg); animation: stamp .45s cubic-bezier(.2, 1.4, .4, 1) .15s both;
+}
+@keyframes stamp { from { opacity: 0; transform: rotate(-8deg) scale(1.9); } to { opacity: 1; transform: rotate(-8deg) scale(1); } }
+.grade {
+  font-family: var(--hand); font-weight: 700; font-size: 8rem; line-height: .85; color: var(--pen);
+  border-bottom: 3px double var(--pen); padding-inline: 18px;
+}
+.nota-text { font-size: 1.1rem; max-width: 30ch; }
+.sign { font-family: var(--hand); font-size: 1.5rem; color: var(--pen); }
+
+/* Prize */
+.vale {
+  background: var(--card); border: 2px dashed var(--rule); border-radius: 16px;
+  padding: 18px; display: grid; gap: 14px;
+}
+.vale-head { font-family: var(--hand); font-size: 1.6rem; color: var(--pen); line-height: 1; }
+.scratch-wrap {
+  position: relative; overflow: hidden; border-radius: 12px; min-height: 150px;
+  display: grid; place-items: center; background: var(--paper); border: 1.5px solid var(--rule);
+}
+.vale-name { text-align: center; padding: 18px 12px; display: grid; gap: 6px; }
+.vale-name strong { font-family: var(--hand); font-size: clamp(2.6rem, 12vw, 3.8rem); line-height: 1; color: var(--pen); }
+.vale-name span { font-size: .85rem; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--ink-soft); }
+.scratch {
+  position: absolute; inset: 0; width: 100%; height: 100%;
+  touch-action: none; cursor: crosshair; transition: opacity .7s ease;
+}
+.scratch.gone { opacity: 0; pointer-events: none; }
+.facts { margin: 0; padding-left: 1.1em; display: grid; gap: 6px; }
+.box {
+  background: var(--card); border: 1.5px solid var(--rule); border-radius: 14px;
+  padding: 16px; display: grid; gap: 12px;
+}
+.code { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+.code-word {
+  font-family: var(--hand); font-size: 1.8rem; line-height: 1.1;
+  background: var(--pen-soft); color: var(--ink); border-radius: 8px; padding: 4px 12px;
+  -webkit-user-select: all; user-select: all;
+}
+.letter {
+  font-family: var(--hand); font-size: 1.55rem; line-height: 1.28;
+  display: grid; gap: 12px; padding: 6px 0 4px;
+}
+.letter .sign { text-align: right; font-size: 1.8rem; }
+.ps { color: var(--pen); }
+
+.downloads { display: grid; gap: 10px; }
+.dl-row { display: grid; gap: 4px; }
+.dl-status { font-size: .95rem; color: var(--ink-soft); min-height: 1.2em; }
+.film { display: block; width: 100%; max-width: 100%; border-radius: 12px; background: var(--ink); }
+
+@media (prefers-reduced-motion: reduce) {
+  .screen.enter, .pop .gomet, .stamp { animation: none !important; }
+  .bar-progress, .scratch { transition: none; }
+}
+</style>
+</head>
+<body>
+
+<header class="bar" id="bar" hidden>
+  <div class="wrap bar-in">
+    <button class="bar-back" id="back" type="button">‹ Arrere</button>
+    <p class="bar-label" id="bar-label" aria-live="polite"></p>
+    <button class="bar-clues" id="clues-btn" type="button" aria-expanded="false" aria-controls="panel"></button>
+  </div>
+  <div class="wrap panel" id="panel" hidden>
+    <p class="panel-title">La teua xuleta</p>
+    <div id="panel-list"></div>
+  </div>
+  <div class="bar-progress" id="progress"></div>
+</header>
+
+<main class="wrap" id="main">
+
+  <!-- Cover -->
+  <section class="screen cover" data-id="portada">
+    <p class="eyebrow">Examen sorpresa · 28 de novembre de 2026</p>
+    <h1 tabindex="-1">Hui t'examines tu, Tiixer</h1>
+    <dl class="fields">
+      <div><dt>Nom</dt><dd>Zaida</dd></div>
+      <div><dt>Assignatura</dt><dd>Tu i jo</dd></div>
+      <div><dt>Curs</dt><dd>La puta vida</dd></div>
+      <div><dt>Corregix</dt><dd>Pau</dd></div>
+    </dl>
+    <div class="pen-note">
+      <p>Quatre temes i quatre preguntes. Cada pregunta que encertes te dona una pista.</p>
+      <p>Al final tens que andivinar el teu regal.</p>
+    </div>
+    <div class="actions"><button class="btn primary" type="button" data-next>Començar l'examen</button></div>
+  </section>
+
+  <!-- Tema 1 -->
+  <section class="screen" data-id="t1" data-label="Tema 1 de 4" hidden>
+    <p class="eyebrow">Tema 1</p>
+    <h2 tabindex="-1">El principi</h2>
+    <p class="lead">Cuan jo vaig naixer tu ja estaves (uela).</p>
+    <div class="photos">
+      <figure class="photo"><img src="img/t1-a.jpg" width="720" height="456" loading="lazy" decoding="async" alt="Zaida de xicoteta en Pau acabat de naixer en braços"><figcaption>Jo acabava d'aplegar i tu ja me tenies en braços.</figcaption></figure>
+      <figure class="photo"><img src="img/t1-b.jpg" width="720" height="455" loading="lazy" decoding="async" alt="Els dos de xicotets en la cuna, entre peluches"><figcaption>Compartiem cuna, peluches i paciència. Bueno la paciència la tenia que tindre jo.</figcaption></figure>
+      <figure class="photo"><img src="img/t1-c.jpg" width="720" height="636" loading="lazy" decoding="async" alt="Els dos de xiquets, cara a cara"><figcaption>Encara que ahí si que me volies.</figcaption></figure>
+    </div>
+    <div class="actions"><button class="btn primary" type="button" data-next>Contestar pregunta</button></div>
+  </section>
+  <section class="screen question" data-id="q1" data-q="q1" data-label="Pregunta 1 de 4" data-next-label="Següent tema" hidden></section>
+
+  <!-- Tema 2 -->
+  <section class="screen" data-id="t2" data-label="Tema 2 de 4" hidden>
+    <p class="eyebrow">Tema 2</p>
+    <h2 tabindex="-1">Disfrasos, cumples i festes</h2>
+    <p class="lead">Cumples, carnavals i abraços dels que apreten.</p>
+    <div class="photos">
+      <figure class="photo"><img src="img/t2-a.jpg" width="1000" height="750" loading="lazy" decoding="async" alt="Pau davant de la vela del seu tercer cumple i Zaida al costat, en les mans al pèl"><figcaption>El meu tercer cumple. Jo davant de la vela i tu pentinant-te per si de cas.</figcaption></figure>
+      <figure class="photo"><img src="img/t2-b.jpg" width="750" height="1000" loading="lazy" decoding="async" alt="Els dos disfrasats iguals, en estreles"><figcaption>Disfrasats iguals. Ja se veia que aniríem junts a tot arreu.</figcaption></figure>
+      <figure class="photo"><img src="img/t2-c.jpg" width="1000" height="750" loading="lazy" decoding="async" alt="Els dos abraçats, un poc més majors"><figcaption>Uns anys més tard, el mateix abraç.</figcaption></figure>
+    </div>
+    <div class="actions"><button class="btn primary" type="button" data-next>Contestar pregunta</button></div>
+  </section>
+  <section class="screen question" data-id="q2" data-q="q2" data-label="Pregunta 2 de 4" data-next-label="Eixir al pati" hidden></section>
+
+  <!-- Pati: a bet that does not count towards the grade -->
+  <section class="screen question recreo" data-id="recreo" data-q="qp" data-label="Pati" data-next-label="Tornar a classe" hidden></section>
+
+  <!-- Tema 3 -->
+  <section class="screen" data-id="t3" data-label="Tema 3 de 4" hidden>
+    <p class="eyebrow">Tema 3</p>
+    <h2 tabindex="-1">Viatges</h2>
+    <p class="lead">En tu he aplegat lluny. Literalment.</p>
+    <p class="swipe">Pasa el dit pa vore'n més →</p>
+    <div class="strip" tabindex="0" aria-label="Fotos de viatges">
+      <figure class="photo"><img src="img/t3-a.jpg" width="978" height="804" loading="lazy" decoding="async" alt="Foto d'estudi del creuer, en Venècia de fondo"><figcaption>En el creuer, en Venècia de fondo. De cartó, pero conta.</figcaption></figure>
+      <figure class="photo"><img src="img/t3-b.jpg" width="1000" height="750" loading="lazy" decoding="async" alt="Els dos al costat de la finestra del barco, en la mar blava de nit"><figcaption>Des de la finestra del barco, en la mar de nit.</figcaption></figure>
+      <figure class="photo"><img src="img/t3-c.jpg" width="750" height="1000" loading="lazy" decoding="async" alt="Els dos al costat de la fita del quilòmetre 0 en Fisterra, en el far darrere"><figcaption>Quilòmetre 0 en Fisterra. La fi del món, i nosatros tan tranquils.</figcaption></figure>
+      <figure class="photo"><img src="img/t3-d.jpg" width="750" height="1000" loading="lazy" decoding="async" alt="Selfi dels dos davant de la muralla d'Àvila"><figcaption>Àvila: muralles, un sol que cremava i el teu braç de selfi profesional.</figcaption></figure>
+      <figure class="photo"><img src="img/t3-e.jpg" width="750" height="1000" loading="lazy" decoding="async" alt="Selfi dels dos davant d'un edifici de fusta, en gorro i chaqueta vaquera"><figcaption>Més amunt, en gorro i chaqueta vaquera.</figcaption></figure>
+      <figure class="photo"><img src="img/t3-f.jpg" width="750" height="1000" loading="lazy" decoding="async" alt="Els dos al costat de la mar a la posta de sol"><figcaption>I postes de sol que no s'obliden.</figcaption></figure>
+    </div>
+    <div class="actions"><button class="btn primary" type="button" data-next>Contestar pregunta</button></div>
+  </section>
+  <section class="screen question" data-id="q3" data-q="q3" data-label="Pregunta 3 de 4" data-next-label="Últim tema" hidden></section>
+
+  <!-- Tema 4 -->
+  <section class="screen" data-id="t4" data-label="Tema 4 de 4" hidden>
+    <p class="eyebrow">Tema 4</p>
+    <h2 tabindex="-1">História recent</h2>
+    <p class="lead">De majors seguim igual: de la mà i rient-mos.</p>
+    <div class="photos">
+      <figure class="photo"><img src="img/t4-a.jpg" width="750" height="1000" loading="lazy" decoding="async" alt="Zaida en la banda de graduada en Magisteri de Primària, al costat de Pau"><figcaption>El dia que te vas graduar en Magisteri. Des d'eixe dia eres Tiixer, i hui te toca estar a l'atre costat de l'examen.</figcaption></figure>
+      <figure class="photo"><img src="img/t4-b.jpg" width="750" height="1000" loading="lazy" decoding="async" alt="Els dos en cadires penjants, agafats de la mà"><figcaption>De la mà, com cuan érem xicotets.</figcaption></figure>
+      <figure class="photo"><img src="img/t4-c.jpg" width="750" height="1000" loading="lazy" decoding="async" alt="Selfi a l'espill, els dos en albornoz"><figcaption>Albornoz, banyera i el teu signe de la victòria. Sabem disfrutar.</figcaption></figure>
+      <figure class="photo"><img src="img/t4-d.jpg" width="750" height="1000" loading="lazy" decoding="async" alt="Zaida rient-se mentres li toca la cara a Pau"><figcaption>Tu rient-te de mi, que és el teu esport preferit.</figcaption></figure>
+      <figure class="photo"><img src="img/t4-e.jpg" width="750" height="1000" loading="lazy" decoding="async" alt="Els dos arreglats en una escala del barco"><figcaption>I ben arreglats cuan toca. Com prompte.</figcaption></figure>
+    </div>
+    <div class="actions"><button class="btn primary" type="button" data-next>Contestar pregunta</button></div>
+  </section>
+  <section class="screen question" data-id="q4" data-q="q4" data-label="Pregunta 4 de 4" data-next-label="Anar a l'examen final" hidden></section>
+
+  <!-- Examen final -->
+  <section class="screen question" data-id="q5" data-q="q5" data-label="Examen final" data-next-label="Vore la nota" hidden></section>
+
+  <!-- Grade -->
+  <section class="screen nota" data-id="nota" data-label="Nota" hidden>
+    <p class="eyebrow">Nota final</p>
+    <h2 tabindex="-1" class="stamp">Sobresalient</h2>
+    <p class="grade" aria-label="Nota: 10">10</p>
+    <p class="nota-text" id="nota-text"></p>
+    <p class="sign">Corregit per Pau</p>
+    <div class="actions" style="width:100%"><button class="btn primary" type="button" data-next>Vore el teu premi</button></div>
+  </section>
+
+  <!-- Prize -->
+  <section class="screen premio" data-id="premio" data-label="Premi" hidden>
+    <p class="eyebrow">El teu premi</p>
+    <h2 tabindex="-1" id="prize-title"></h2>
+    <div class="vale">
+      <p class="vale-head">Val per</p>
+      <div class="scratch-wrap" id="scratch-wrap">
+        <div class="vale-name"><strong id="prize-name"></strong><span id="prize-place"></span></div>
+        <canvas class="scratch" id="scratch" aria-hidden="true"></canvas>
+      </div>
+      <button class="linkbtn" type="button" id="reveal-all">Destapar sense rascar</button>
+    </div>
+    <div id="after" hidden>
+      <div style="display:grid;gap:18px">
+        <ul class="facts" id="prize-facts"></ul>
+        <p><a id="prize-link" href="#" target="_blank" rel="noopener"></a></p>
+        <div class="box">
+          <h3>Pa guardar-ho</h3>
+          <video class="film" id="film" controls playsinline preload="metadata" hidden></video>
+          <div class="downloads" id="downloads"></div>
+          <p class="dl-status" id="dl-status" aria-live="polite"></p>
+        </div>
+        <div class="letter">
+          <p>Felicitats, Tiixer.</p>
+          <p>Me vas tindre en braços abans de que jo m'enterara de res, i des de llavors no has parat de cuidar-me (encara que ara te diga que no te soporte). En tu he anat del quilòmetre 0 de Fisterra fins a Finlandia, i no se m'ocurrix millor companya de viatge.</p>
+          <p id="letter-plan"></p>
+          <p>T'estime molt.</p>
+          <p class="sign">Pau</p>
+          <p class="ps">PD: Has aprovat, pero no t'acostumes.</p>
+        </div>
+        <button class="linkbtn" type="button" data-reset>Repetir l'examen</button>
+      </div>
+    </div>
+  </section>
+</main>
+
+<script>
+(() => {
+  'use strict';
+  document.documentElement.lang = 'ca';
+
+  // Gift-specific content.
+  const GIFT = {
+    title: 'Un menú degustació pa dos en…',
+    name: 'Frisone',
+    place: 'Restaurant de la guía Michelin · Elx',
+    facts: [
+      'Menú mediterrani pa tu i pa Enrique: snacks, entrants, dos principals, prepostre, postre i vi.',
+      'Sopars divendres i dissabte; dinars de dijous a diumenge.',
+      'Reserveu per telèfon en el 965 451 197. El val te l\'envie jo a part i dura 39 mesos.'
+    ],
+    link: { href: 'https://www.restaurantefrisone.com/', text: 'Vore el restaurant' },
+    letterPlan: 'Enguany el pla és pa tu i pa Enrique: arreglar-vos, sentar-vos i disfrutar de cada plat (i que Enrique no se quede en fam).'
+  };
+
+  // Files offered at the end. Each: { path, filename, label }.
+  const FILES = [
+    { path: 'files/examen-de-tiixer.mp4', filename: 'Examen de Tiixer.mp4', label: 'Descarregar el vídeo' }
+  ];
+  const FILM = 'files/examen-de-tiixer.mp4';
+
+  // One clue per question (q1 to q4). The Pati shows the first two; the final exam shows all four.
+  const CLUES = [
+    'És pa dos: pa tu i pa Enrique.',
+    'Teniu que anar un poc arreglats (no val anar en chandal).',
+    'No fa falta maleta, està propet de casa, en la ciutat de les Palmeres.',
+    'Hi han molts plats xicotets, Enrique igual se queda en fam.'
+  ];
+  const GOMETS = ['g-yellow', 'g-green', 'g-blue', 'g-pink'];
+
+  // q1 to q5 count towards the grade (2 points each); qp is the Pati bet and does not.
+  const QUESTIONS = {
+    q1: {
+      eyebrow: 'Pregunta 1 · 2 punts', clue: 0,
+      text: 'Que feies tu cuan jo estava dormint en la cuna?',
+      options: [
+        { t: 'Res, eres molt bona xiqueta', r: 'Bona xiqueta tu? Mira bé la foto de la cuna.' },
+        { t: 'Clavarte dins de la cuna en mi', ok: true, r: 'Correcte. No me deixaves dormir ni en pau.' },
+        { t: 'Contarme cuentos', r: 'Cuentos els que me contes ara. Torna a provar.' }
+      ]
+    },
+    q2: {
+      eyebrow: 'Pregunta 2 · 2 punts', clue: 1,
+      text: 'Quina mitica frase vaig dir en el meu 3er cumple?',
+      options: [
+        { t: 'No he bufat jo!', ok: true, r: 'Eixa mateixa. Una frase pa la història.' },
+        { t: 'Amunt Valencia! 🦇', r: 'Eixa la dic ara. En tres anys encara no.' },
+        { t: 'Pedro Sanchez hijo de puta!', r: 'En tres anys encara no sabia ni qui era.' }
+      ]
+    },
+    qp: {
+      eyebrow: 'Pati', clue: null, chuleta: 2, prevLabel: 'Arrere',
+      text: 'En dos pistes, què apostes?',
+      lead: 'Esta no puntua. És pa vore per on vas.',
+      options: [
+        { t: 'Un viatge a Marruecos', r: 'Fred, fred. Marruecos pa atra volta.' },
+        { t: 'Una nit de hotel', r: 'Templat, pero no.' },
+        { t: 'Algo de menjar', ok: true, r: 'Vas bé. Pero de menjar n\'hi ha de moltes classes.' },
+        { t: 'Un taller de cerámica', r: 'Fred. Arreglats pa mancharvos de fang? No.' }
+      ]
+    },
+    q3: {
+      eyebrow: 'Pregunta 3 · 2 punts', clue: 2,
+      text: 'Que va passar nomes aplegarem a Finlandia?',
+      options: [
+        { t: 'Anarem a vore a Nadia', r: 'Això vingué després. Pensa en com mos moguérem.' },
+        { t: 'Un finés mos preguntá quin hora era en finlandés', r: 'Mos haguérem quedat igual, pero no.' },
+        { t: 'Vas tindre que preguntar tu per els billets de tren per que no tinc ni idea de inglés.', ok: true, r: 'Correcte. Sense tu encara estaria en l\'estació.' }
+      ]
+    },
+    q4: {
+      eyebrow: 'Pregunta 4 · 2 punts', clue: 3,
+      text: 'Que es lo que últimament sempre te dic encara que sas que no es del tot veritat?',
+      options: [
+        { t: 'Que tens el cap mes gran que he vist en tota la meua vida.', r: 'Això és veritat del tot, aixina que no val.' },
+        { t: 'Que no te soporte', ok: true, r: 'Correcte. Te soporte, pero no ho digues a ningú.' },
+        { t: 'Que eres molt simpática.', r: 'Això no t\'ho he dit mai.' }
+      ]
+    },
+    q5: {
+      eyebrow: 'Examen final · 2 punts', clue: null, chuleta: 4, prevLabel: 'Arrere',
+      text: 'En les quatre pistes, què és el teu regal?',
+      options: [
+        { t: 'Una nit de hotel amb SPA incluit', r: 'Templat, pero no. Repassa la pista 4.' },
+        { t: 'Un creuer per Marruecos', r: 'Ojalà. Repassa la pista 3.' },
+        { t: 'Un menú degustació per a dos en un restaurant de la guía Michelin', ok: true, r: 'Eixa és! Ara, la nota.' },
+        { t: 'Un bizum de 100€ com sempre (era tot un paripé)', r: 'Paripé el teu. Enguany no hi ha bizum.' }
+      ]
+    }
+  };
+
+  const KEY = 'tiixer-examen-2026-v2';
+  const blank = () => ({ i: 0, q: {}, scratched: false });
+  const load = () => {
+    try {
+      const s = JSON.parse(localStorage.getItem(KEY));
+      if (s && typeof s.i === 'number' && s.q && typeof s.q === 'object') return Object.assign(blank(), s);
+    } catch (e) { /* storage unavailable */ }
+    return blank();
+  };
+  let state = load();
+  const save = () => { try { localStorage.setItem(KEY, JSON.stringify(state)); } catch (e) { /* ignore */ } };
+  const qState = id => state.q[id] || (state.q[id] = { tried: [], done: false });
+
+  const $ = (sel, root = document) => root.querySelector(sel);
+  const screens = Array.from(document.querySelectorAll('.screen'));
+  const bar = $('#bar');
+  const LETTERS = ['a)', 'b)', 'c)', 'd)'];
+
+  const el = (tag, cls, text) => {
+    const n = document.createElement(tag);
+    if (cls) n.className = cls;
+    if (text != null) n.textContent = text;
+    return n;
+  };
+
+  const clueCollected = k => {
+    const id = 'q' + (k + 1);
+    return !!(state.q[id] && state.q[id].done);
+  };
+
+  function fillChuleta(box, count) {
+    box.textContent = '';
+    box.append(el('p', 'eyebrow', 'La teua xuleta'));
+    const ol = el('ol');
+    for (let k = 0; k < count; k++) {
+      const has = clueCollected(k);
+      const li = el('li', has ? '' : 'locked');
+      li.append(el('span', 'gomet ' + GOMETS[k], String(k + 1)));
+      li.append(el('span', '', has ? CLUES[k] : 'Pista ' + (k + 1) + ': encerta la pregunta ' + (k + 1) + ' pa vore-la.'));
+      ol.append(li);
+    }
+    box.append(ol);
+  }
+
+  // Questions
+  function buildQuestion(sec) {
+    const id = sec.dataset.q;
+    const data = QUESTIONS[id];
+    sec.append(el('p', 'eyebrow', data.eyebrow));
+    const h = el('h2', '', data.text);
+    h.tabIndex = -1;
+    sec.append(h);
+    if (data.lead) sec.append(el('p', 'lead', data.lead));
+    if (data.chuleta) {
+      const ch = el('div', 'chuleta');
+      ch.dataset.chuleta = String(data.chuleta);
+      sec.append(ch);
+    }
+    const opts = el('div', 'opts');
+    opts.setAttribute('role', 'group');
+    opts.setAttribute('aria-label', 'Respostes');
+    data.options.forEach((o, j) => {
+      const b = el('button', 'opt');
+      b.type = 'button';
+      b.append(el('span', 'opt-l', LETTERS[j]), el('span', 'opt-t', o.t));
+      b.addEventListener('click', () => answer(sec, j));
+      opts.append(b);
+    });
+    sec.append(opts);
+    const fb = el('p', 'feedback');
+    fb.setAttribute('aria-live', 'polite');
+    sec.append(fb);
+    if (data.clue != null) {
+      const k = data.clue;
+      const clue = el('div', 'clue');
+      clue.hidden = true;
+      const txt = el('div');
+      txt.append(el('p', 'clue-label', 'Pista ' + (k + 1)), el('p', 'clue-text', CLUES[k]));
+      clue.append(el('span', 'gomet ' + GOMETS[k], String(k + 1)), txt);
+      sec.append(clue);
+    }
+    const actions = el('div', 'actions');
+    const next = el('button', 'btn primary', sec.dataset.nextLabel || 'Següent');
+    next.type = 'button';
+    next.dataset.next = '';
+    next.hidden = true;
+    const prev = el('button', 'btn ghost', data.prevLabel || 'Tornar a vore el tema');
+    prev.type = 'button';
+    prev.dataset.prev = '';
+    actions.append(next, prev);
+    sec.append(actions);
+  }
+
+  function renderQuestion(sec, justSolved) {
+    const id = sec.dataset.q;
+    const data = QUESTIONS[id];
+    const st = qState(id);
+    sec.querySelectorAll('.opt').forEach((b, j) => {
+      const tried = st.tried.includes(j);
+      b.classList.toggle('right', tried && !!data.options[j].ok);
+      b.classList.toggle('wrong', tried && !data.options[j].ok);
+      b.disabled = st.done || tried;
+    });
+    const last = st.tried[st.tried.length - 1];
+    $('.feedback', sec).textContent = last != null ? data.options[last].r : '';
+    const clue = $('.clue', sec);
+    if (clue) {
+      clue.hidden = !st.done;
+      clue.classList.toggle('pop', !!justSolved);
+    }
+    $('[data-next]', sec).hidden = !st.done;
+  }
+
+  function answer(sec, j) {
+    const st = qState(sec.dataset.q);
+    if (st.done || st.tried.includes(j)) return;
+    st.tried.push(j);
+    const ok = !!QUESTIONS[sec.dataset.q].options[j].ok;
+    if (ok) st.done = true;
+    save();
+    renderQuestion(sec, ok);
+    updateBar();
+    if (ok) {
+      const target = $('.clue', sec) || $('[data-next]', sec);
+      requestAnimationFrame(() => target.scrollIntoView({ behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block: 'center' }));
+    }
+  }
+
+  // Grade
+  function renderNota() {
+    const ids = ['q1', 'q2', 'q3', 'q4', 'q5'];
+    const firstTry = ids.filter(id => state.q[id] && state.q[id].done && state.q[id].tried.length === 1).length;
+    const n = firstTry * 2;
+    $('#nota-text').textContent = n === 10
+      ? 'Deu de deu a la primera. Ni jo ho haguera fet millor.'
+      : "Nota de l'examen: " + n + '. Nota final: 10, per que hui és el teu cumple i el que corregix soc jo.';
+  }
+
+  // Downloads: a plain same-origin link with the download attribute. Inside a claude.ai
+  // Artifact (which blocks plain downloads) the "downloads" capability is used instead.
+  const hasCapability = () => !!(window.claude && typeof window.claude.use === 'function');
+
+  async function saveWithCapability(file, link) {
+    const status = $('#dl-status');
+    const label = link.textContent;
+    link.setAttribute('aria-disabled', 'true');
+    link.textContent = 'Preparant…';
+    status.textContent = '';
+    try {
+      const dl = await Promise.resolve(window.claude.use('downloads'));
+      const res = await fetch(file.path);
+      if (!dl || !res.ok) throw { code: 'unavailable' };
+      await dl.save({ filename: file.filename, data: await res.blob() });
+      link.textContent = 'Guardat';
+    } catch (e) {
+      link.textContent = label;
+      const code = e && e.code;
+      status.textContent = code === 'declined'
+        ? 'Cap problema: ho pots guardar cuan vullgues.'
+        : code === 'rate_limited'
+          ? 'Espera un segon i torna-ho a provar.'
+          : 'Ací no se pot descarregar. Prova a obrir la web en el navegador.';
+    } finally {
+      link.removeAttribute('aria-disabled');
+    }
+  }
+
+  function fillDownloads() {
+    const box = $('#downloads');
+    box.textContent = '';
+    const film = $('#film');
+    if (FILM) { film.src = FILM; film.hidden = false; } else { film.hidden = true; }
+    FILES.forEach(f => {
+      const row = el('div', 'dl-row');
+      const a = el('a', 'btn primary', f.label);
+      a.href = f.path;
+      a.download = f.filename;
+      a.addEventListener('click', e => {
+        if (!hasCapability()) return;
+        e.preventDefault();
+        if (a.getAttribute('aria-disabled') !== 'true') saveWithCapability(f, a);
+      });
+      row.append(a);
+      box.append(row);
+    });
+  }
+
+  // Prize and scratch card
+  function fillPrize() {
+    $('#prize-title').textContent = GIFT.title;
+    $('#prize-name').textContent = GIFT.name;
+    $('#prize-place').textContent = GIFT.place;
+    const ul = $('#prize-facts');
+    ul.textContent = '';
+    GIFT.facts.forEach(f => ul.append(el('li', '', f)));
+    const a = $('#prize-link');
+    a.href = GIFT.link.href;
+    a.textContent = GIFT.link.text;
+    $('#letter-plan').textContent = GIFT.letterPlan;
+    fillDownloads();
+  }
+
+  const canvas = $('#scratch');
+  const ctx = canvas.getContext('2d');
+  let painted = false;
+  let lastWidth = 0;
+
+  function paintScratch() {
+    if (state.scratched) return;
+    const r = $('#scratch-wrap').getBoundingClientRect();
+    if (!r.width) return;
+    lastWidth = r.width;
+    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    canvas.width = Math.round(r.width * dpr);
+    canvas.height = Math.round(r.height * dpr);
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    ctx.globalCompositeOperation = 'source-over';
+    const g = ctx.createLinearGradient(0, 0, r.width, r.height);
+    g.addColorStop(0, '#aeb4be');
+    g.addColorStop(.45, '#e4e7eb');
+    g.addColorStop(1, '#9fa6b1');
+    ctx.fillStyle = g;
+    ctx.fillRect(0, 0, r.width, r.height);
+    ctx.fillStyle = 'rgba(255, 255, 255, .35)';
+    for (let k = 0; k < 160; k++) ctx.fillRect(Math.random() * r.width, Math.random() * r.height, 2, 2);
+    ctx.fillStyle = '#4d535d';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.font = '700 30px Caveat, "Bradley Hand", cursive';
+    ctx.fillText('Rasca ací en el dit', r.width / 2, r.height / 2);
+    painted = true;
+  }
+
+  function scratchLine(a, b) {
+    ctx.globalCompositeOperation = 'destination-out';
+    ctx.strokeStyle = '#000';
+    ctx.lineWidth = 38;
+    ctx.lineCap = 'round';
+    ctx.lineJoin = 'round';
+    ctx.beginPath();
+    ctx.moveTo(a.x, a.y);
+    ctx.lineTo(b.x, b.y);
+    ctx.stroke();
+  }
+
+  function clearedRatio() {
+    const { width, height } = canvas;
+    if (!width || !height) return 0;
+    const data = ctx.getImageData(0, 0, width, height).data;
+    let clear = 0, total = 0;
+    for (let k = 3; k < data.length; k += 64) { total++; if (data[k] === 0) clear++; }
+    return clear / total;
+  }
+
+  function revealPrize(animate) {
+    state.scratched = true;
+    save();
+    canvas.classList.add('gone');
+    if (!animate) canvas.hidden = true;
+    $('#reveal-all').hidden = true;
+    $('#after').hidden = false;
+  }
+
+  (function wireScratch() {
+    let down = false, last = null, moves = 0;
+    const pos = e => {
+      const r = canvas.getBoundingClientRect();
+      return { x: e.clientX - r.left, y: e.clientY - r.top };
+    };
+    canvas.addEventListener('pointerdown', e => {
+      if (state.scratched) return;
+      down = true;
+      try { canvas.setPointerCapture(e.pointerId); } catch (err) { /* ignore */ }
+      last = pos(e);
+      scratchLine(last, { x: last.x + .1, y: last.y });
+      e.preventDefault();
+    });
+    canvas.addEventListener('pointermove', e => {
+      if (!down) return;
+      const p = pos(e);
+      scratchLine(last, p);
+      last = p;
+      if (++moves % 10 === 0 && clearedRatio() > .5) { down = false; revealPrize(true); }
+    });
+    const end = () => {
+      if (!down) return;
+      down = false;
+      if (clearedRatio() > .45) revealPrize(true);
+    };
+    canvas.addEventListener('pointerup', end);
+    canvas.addEventListener('pointercancel', end);
+    $('#reveal-all').addEventListener('click', () => revealPrize(true));
+    if ('ResizeObserver' in window) {
+      new ResizeObserver(entries => {
+        const w = entries[0].contentRect.width;
+        if (painted && !state.scratched && Math.abs(w - lastWidth) > 1) paintScratch();
+      }).observe($('#scratch-wrap'));
+    }
+  })();
+
+  function showPrize() {
+    if (state.scratched) {
+      canvas.hidden = true;
+      canvas.classList.add('gone');
+      $('#reveal-all').hidden = true;
+      $('#after').hidden = false;
+      return;
+    }
+    canvas.hidden = false;
+    canvas.classList.remove('gone');
+    $('#reveal-all').hidden = false;
+    $('#after').hidden = true;
+    requestAnimationFrame(paintScratch);
+    if (document.fonts && document.fonts.load) {
+      document.fonts.load('700 30px Caveat').then(() => { if (!state.scratched) paintScratch(); }).catch(() => {});
+    }
+  }
+
+  // Navigation
+  function maxReachable() {
+    for (let k = 0; k < screens.length; k++) {
+      const s = screens[k];
+      if (s.dataset.q && !qState(s.dataset.q).done) return k;
+    }
+    return screens.length - 1;
+  }
+
+  function updateBar() {
+    const s = screens[state.i];
+    bar.hidden = state.i === 0;
+    $('#bar-label').textContent = s.dataset.label || '';
+    $('#back').disabled = state.i === 0;
+    const btn = $('#clues-btn');
+    btn.textContent = '';
+    let count = 0;
+    for (let k = 0; k < 4; k++) {
+      const on = clueCollected(k);
+      if (on) count++;
+      btn.append(el('span', 'dot' + (on ? ' on ' + GOMETS[k] : '')));
+    }
+    btn.setAttribute('aria-label', 'Pistes aconseguides: ' + count + ' de 4. Vore la xuleta');
+    $('#progress').style.transform = 'scaleX(' + (state.i / (screens.length - 1)) + ')';
+    fillChuleta($('#panel-list'), 4);
+  }
+
+  function show(i, opts = {}) {
+    i = Math.max(0, Math.min(i, maxReachable()));
+    screens.forEach((s, k) => { s.hidden = k !== i; });
+    state.i = i;
+    save();
+    const s = screens[i];
+    if (s.dataset.q) renderQuestion(s, false);
+    s.querySelectorAll('[data-chuleta]').forEach(box => fillChuleta(box, Number(box.dataset.chuleta)));
+    if (s.dataset.id === 'nota') renderNota();
+    if (s.dataset.id === 'premio') showPrize();
+    $('#panel').hidden = true;
+    $('#clues-btn').setAttribute('aria-expanded', 'false');
+    updateBar();
+    window.scrollTo(0, 0);
+    if (!opts.instant) {
+      s.classList.remove('enter');
+      void s.offsetWidth;
+      s.classList.add('enter');
+      const h = s.querySelector('h1, h2');
+      if (h) h.focus({ preventScroll: true });
+    }
+  }
+
+  document.addEventListener('click', e => {
+    const t = e.target.closest('[data-next], [data-prev], [data-reset]');
+    if (!t) return;
+    if (t.hasAttribute('data-next')) show(state.i + 1);
+    else if (t.hasAttribute('data-prev')) show(state.i - 1);
+    else if (t.hasAttribute('data-reset')) {
+      state = blank();
+      save();
+      document.querySelectorAll('.question').forEach(sec => renderQuestion(sec, false));
+      show(0);
+    }
+  });
+  $('#back').addEventListener('click', () => show(state.i - 1));
+  $('#clues-btn').addEventListener('click', () => {
+    const panel = $('#panel');
+    panel.hidden = !panel.hidden;
+    $('#clues-btn').setAttribute('aria-expanded', String(!panel.hidden));
+  });
+
+  // Boot
+  document.querySelectorAll('.question').forEach(buildQuestion);
+  fillPrize();
+  show(state.i, { instant: true });
+})();
+</script>
+</body>
+</html>
