@@ -12,6 +12,7 @@ My personal website, published at [paufandos.com](https://paufandos.com): one st
 - `tests/`: Playwright end-to-end, accessibility (axe) and visual tests on desktop, laptop, iPad, iPhone 15, iPhone SE and Pixel 7.
 - `tests/banner.mjs`: renders the LinkedIn and X banners from `tests/banner.html` (`node tests/banner.mjs <out-dir>`).
 - `.github/workflows/pages.yml`: runs the end-to-end tests and deploys to GitHub Pages on every push to `main`.
+- Branch `regal-tixer`: a temporary gift page (public, `noindex`), kept out of `main`'s history and published at `/regal-tixer/` while the branch exists. After pushing to it, redeploy with `gh workflow run pages.yml --ref main`; to take it down, delete the branch and redeploy.
 
 ```sh
 npm install
