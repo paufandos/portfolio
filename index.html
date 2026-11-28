@@ -12,9 +12,9 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Andika:ital,wght@0,400;0,700;1,400&family=Caveat:wght@500;700&display=swap">
 <style>
-/* Layout: one notebook page per screen, single column on cuadrovía paper with a red margin line.
-   Blue ink for the text, red pen for Pau's corrections, gomets for the clues.
-   Light theme = school notebook; dark theme = blackboard. */
+/* A school notebook on squared paper (a blackboard in dark mode). Each tema has its own colour,
+   the same as the gomet of its clue: 1 yellow, 2 green, 3 blue, 4 pink. The Pati is a playground court.
+   Built for a phone first. */
 :root {
   --paper: #fcfcf7;
   --grid: rgba(52, 98, 178, .13);
@@ -23,16 +23,22 @@
   --ink: #1f2d5c;
   --ink-soft: #56618a;
   --pen: #cc2c24;
-  --pen-soft: rgba(204, 44, 36, .09);
+  --pen-soft: rgba(204, 44, 36, .1);
+  --ok: #1f8a43;
+  --ok-soft: rgba(31, 138, 67, .12);
   --card: #ffffff;
   --frame: #ffffff;
-  --frame-ink: #1f2d5c;
-  --tape: rgba(244, 211, 94, .75);
+  --tape: rgba(244, 211, 94, .8);
   --shadow: rgba(31, 45, 92, .18);
+  --court: #2f8a63;
+  --court-bar: #297a57;
   --g-yellow: #f2b705;
   --g-green: #2e9e4f;
   --g-blue: #2b74d1;
   --g-pink: #e2508a;
+  --tone: var(--pen);
+  --tone-soft: var(--pen-soft);
+  --tone-ink: #ffffff;
   --hand: "Caveat", "Bradley Hand", "Segoe Print", cursive;
   --text: "Andika", "Atkinson Hyperlegible", system-ui, -apple-system, sans-serif;
 }
@@ -45,10 +51,14 @@
     --ink: #eef3ec;
     --ink-soft: #b3c2b6;
     --pen: #ff8d7d;
-    --pen-soft: rgba(255, 141, 125, .14);
+    --pen-soft: rgba(255, 141, 125, .15);
+    --ok: #74d394;
+    --ok-soft: rgba(116, 211, 148, .15);
     --card: #243830;
-    --tape: rgba(244, 211, 94, .4);
+    --tape: rgba(244, 211, 94, .45);
     --shadow: rgba(0, 0, 0, .45);
+    --court: #1f5c44;
+    --court-bar: #1b513c;
     color-scheme: dark;
   }
 }
@@ -60,18 +70,27 @@
   --ink: #eef3ec;
   --ink-soft: #b3c2b6;
   --pen: #ff8d7d;
-  --pen-soft: rgba(255, 141, 125, .14);
+  --pen-soft: rgba(255, 141, 125, .15);
+  --ok: #74d394;
+  --ok-soft: rgba(116, 211, 148, .15);
   --card: #243830;
-  --tape: rgba(244, 211, 94, .4);
+  --tape: rgba(244, 211, 94, .45);
   --shadow: rgba(0, 0, 0, .45);
+  --court: #1f5c44;
+  --court-bar: #1b513c;
   color-scheme: dark;
 }
+[data-tone="yellow"] { --tone: var(--g-yellow); --tone-soft: rgba(242, 183, 5, .2); --tone-ink: #4a3700; }
+[data-tone="green"] { --tone: var(--g-green); --tone-soft: rgba(46, 158, 79, .16); --tone-ink: #ffffff; }
+[data-tone="blue"] { --tone: var(--g-blue); --tone-soft: rgba(43, 116, 209, .16); --tone-ink: #ffffff; }
+[data-tone="pink"] { --tone: var(--g-pink); --tone-soft: rgba(226, 80, 138, .16); --tone-ink: #ffffff; }
 
 * { box-sizing: border-box; }
 [hidden] { display: none !important; }
 html { -webkit-text-size-adjust: 100%; }
-body { margin: 0; }
 body {
+  margin: 0;
+  min-height: 100vh;
   background-color: var(--paper);
   background-image:
     linear-gradient(var(--grid) 1px, transparent 1px),
@@ -81,6 +100,7 @@ body {
   font-family: var(--text);
   font-size: 17px;
   line-height: 1.55;
+  transition: background-color .4s ease;
 }
 body::before {
   content: "";
@@ -92,10 +112,11 @@ body::before {
 }
 p { margin: 0; }
 h1, h2, h3 { margin: 0; text-wrap: balance; }
-h2 { font-size: 1.7rem; line-height: 1.2; font-weight: 700; }
+h2 { font-size: 1.75rem; line-height: 1.18; font-weight: 700; }
 h3 { font-size: 1.15rem; line-height: 1.3; font-weight: 700; }
 [tabindex="-1"]:focus { outline: none; }
 a { color: var(--ink); text-decoration-color: var(--pen); text-underline-offset: 3px; }
+.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
 
 .wrap {
   max-width: 560px;
@@ -103,7 +124,7 @@ a { color: var(--ink); text-decoration-color: var(--pen); text-underline-offset:
   padding-left: max(16px, env(safe-area-inset-left, 0px));
   padding-right: max(16px, env(safe-area-inset-right, 0px));
 }
-main.wrap { padding-block: 22px 64px; }
+main.wrap { padding-block: 22px 72px; overflow-x: clip; }
 
 /* Top bar */
 .bar {
@@ -112,6 +133,7 @@ main.wrap { padding-block: 22px 64px; }
   z-index: 5;
   background: var(--paper);
   border-bottom: 1px solid var(--rule);
+  transition: background-color .4s ease;
 }
 .bar-in { display: flex; align-items: center; gap: 8px; padding-block: 6px; }
 .bar-back {
@@ -119,7 +141,7 @@ main.wrap { padding-block: 22px 64px; }
   font: 700 .95rem/1 var(--text); padding: 10px 6px 10px 0; min-height: 44px;
 }
 .bar-back:disabled { opacity: .35; cursor: default; }
-.bar-label { flex: 1; min-width: 0; text-align: center; font-family: var(--hand); font-size: 1.4rem; line-height: 1.1; }
+.bar-label { flex: 1; min-width: 0; text-align: center; font-family: var(--hand); font-size: 1.45rem; line-height: 1.1; }
 .bar-clues {
   display: flex; align-items: center; gap: 5px; cursor: pointer;
   background: var(--card); border: 1.5px solid var(--rule); border-radius: 999px;
@@ -127,20 +149,27 @@ main.wrap { padding-block: 22px 64px; }
 }
 .dot { width: 14px; height: 14px; border-radius: 50%; border: 1.5px dashed var(--ink-soft); }
 .dot.on { border: 0; box-shadow: inset 0 -2px 0 rgba(0, 0, 0, .15); }
-.bar-progress { height: 3px; background: var(--pen); transform-origin: left center; transform: scaleX(0); transition: transform .4s ease; }
-.panel { padding-block: 4px 16px; display: grid; gap: 10px; }
+.bar-progress {
+  height: 4px; background: var(--tone); transform-origin: left center; transform: scaleX(0);
+  transition: transform .5s cubic-bezier(.3, .8, .3, 1), background-color .4s ease;
+}
+.panel { padding-block: 4px 16px; display: grid; gap: 10px; background: var(--paper); color: var(--ink); }
 .panel-title { font-family: var(--hand); font-size: 1.45rem; color: var(--pen); }
 
-/* Screens */
+/* Screens and their entrance: children rise in one after another, from the side you are going to. */
 .screen {
+  position: relative;
   border-left: 2px solid var(--margin);
   padding-left: 18px;
   display: flex;
   flex-direction: column;
   gap: 18px;
 }
-.screen.enter { animation: turn .45s cubic-bezier(.2, .7, .2, 1) both; }
-@keyframes turn { from { opacity: .3; transform: translateY(12px); } to { opacity: 1; transform: none; } }
+.screen.enter > *:not(.stamp) { animation: rise-fwd .5s cubic-bezier(.2, .75, .25, 1) backwards; animation-delay: calc(var(--d, 0) * 60ms); }
+.screen.enter.back > *:not(.stamp) { animation-name: rise-back; }
+.screen.enter .opt { animation: rise-fwd .45s cubic-bezier(.2, .75, .25, 1) backwards; animation-delay: calc(220ms + var(--k, 0) * 70ms); }
+@keyframes rise-fwd { from { opacity: 0; transform: translate(28px, 8px); } }
+@keyframes rise-back { from { opacity: 0; transform: translate(-28px, 8px); } }
 
 .eyebrow {
   font-size: .78rem; font-weight: 700; letter-spacing: .09em;
@@ -148,28 +177,120 @@ main.wrap { padding-block: 22px 64px; }
 }
 .lead { font-size: 1.08rem; color: var(--ink-soft); }
 .pen-note {
-  color: var(--pen); font-family: var(--hand); font-size: 1.5rem; line-height: 1.22;
+  color: var(--pen); font-family: var(--hand); font-size: 1.55rem; line-height: 1.22;
   display: grid; gap: 8px; transform: rotate(-1deg); padding-block: 4px;
 }
 
 /* Cover */
-.cover h1 { font-family: var(--hand); font-weight: 700; font-size: clamp(2.7rem, 12vw, 3.6rem); line-height: .98; }
-.fields { display: grid; grid-template-columns: 1fr 1fr; gap: 12px 18px; margin: 0; }
+.cover h1 { font-family: var(--hand); font-weight: 700; font-size: clamp(2.8rem, 13vw, 3.8rem); line-height: .98; }
+.hl { position: relative; color: var(--pen); white-space: nowrap; display: inline-block; }
+.squiggle { position: absolute; left: -2%; bottom: -8px; width: 104%; height: 16px; overflow: visible; }
+.squiggle path { fill: none; stroke: var(--pen); stroke-width: 4; stroke-linecap: round; stroke-dasharray: 260; stroke-dashoffset: 0; animation: draw 1s .5s ease-out backwards; }
+@keyframes draw { from { stroke-dashoffset: 260; } }
+.fields {
+  position: relative; display: grid; grid-template-columns: 1fr 1fr; gap: 12px 18px; margin: 0;
+  background: var(--card); border: 1.5px solid var(--rule); border-radius: 14px; padding: 16px;
+  box-shadow: 0 6px 16px var(--shadow);
+}
 .fields div { border-bottom: 1.5px dotted var(--rule); padding-bottom: 2px; min-width: 0; }
 .fields dt { font-size: .72rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--ink-soft); }
-.fields dd { margin: 0; font-family: var(--hand); font-size: 1.75rem; line-height: 1.1; }
+.fields dd { margin: 0; font-family: var(--hand); font-size: 1.8rem; line-height: 1.1; }
+.sticker {
+  position: absolute; width: 50px; height: 50px; border-radius: 50%;
+  display: grid; place-items: center; font: 700 1.3rem/1 var(--text); color: #fff;
+  box-shadow: inset 0 -3px 0 rgba(0, 0, 0, .16), 0 3px 8px var(--shadow);
+  animation: stick .6s cubic-bezier(.3, 1.6, .5, 1) backwards;
+}
+.fields .sticker { top: -20px; right: -10px; transform: rotate(12deg); animation-delay: .7s; }
+.cover .btn.primary { animation: nudge 2.6s 2s ease-in-out infinite; }
+@keyframes nudge { 0%, 86%, 100% { transform: none; } 90% { transform: rotate(-1.5deg) scale(1.02); } 95% { transform: rotate(1.5deg) scale(1.02); } }
+
+/* Tema header and the phrase of each section */
+.tema-head { display: flex; align-items: center; gap: 16px; }
+.tema-num {
+  flex: 0 0 auto; width: 74px; height: 74px; border-radius: 50%;
+  display: grid; place-items: center; background: var(--tone); color: var(--tone-ink);
+  font: 700 3rem/1 var(--hand); transform: rotate(-8deg);
+  box-shadow: inset 0 -5px 0 rgba(0, 0, 0, .16), 0 4px 10px var(--shadow);
+}
+.screen.enter .tema-num { animation: stick .65s cubic-bezier(.3, 1.6, .5, 1) .1s backwards; }
+.tema-head h2 { font-size: 2rem; }
+.note {
+  position: relative; align-self: flex-start; max-width: 100%;
+  background: var(--tone-soft); border-radius: 4px 14px 6px 12px;
+  padding: 16px 18px 14px; margin-top: 8px;
+  font-family: var(--hand); font-size: 1.6rem; line-height: 1.2;
+  transform: rotate(-1.2deg); box-shadow: 0 3px 0 rgba(0, 0, 0, .05);
+}
+.note::before {
+  content: ""; position: absolute; top: -11px; left: 22px; width: 70px; height: 20px;
+  background: var(--tape); transform: rotate(-4deg);
+}
+.sub-title {
+  align-self: flex-start; margin-top: 10px;
+  font-family: var(--hand); font-size: 2.1rem; line-height: 1;
+  background: linear-gradient(transparent 58%, var(--tone-soft) 58%);
+  padding-inline: 4px;
+}
+.sub-note { font-size: 1.05rem; color: var(--ink-soft); margin-top: -8px; }
+
+/* Photo galleries: polaroids on a horizontal strip. Swipe, or use the arrows. */
+.gallery { margin-left: -36px; margin-right: -16px; display: grid; gap: 4px; }
+.g-track {
+  --gh: min(52vh, 420px);
+  position: relative; display: flex; gap: 14px; align-items: center;
+  overflow-x: auto; scroll-snap-type: x mandatory; overscroll-behavior-x: contain;
+  padding-block: 16px 20px; scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+}
+.g-track::-webkit-scrollbar { display: none; }
+.g-track:focus-visible { outline: 3px solid var(--tone); outline-offset: -3px; }
+.g-item {
+  position: relative; flex: 0 0 auto; margin: 0; scroll-snap-align: center;
+  width: min(78vw, 440px, calc(var(--gh) * var(--ar, 1.333)));
+  background: var(--frame); padding: 9px 9px 30px; border-radius: 3px;
+  box-shadow: 0 10px 24px var(--shadow), 0 1px 2px var(--shadow);
+  transform: rotate(var(--rot, -2deg)) scale(.88); opacity: .5;
+  transition: transform .4s cubic-bezier(.3, .8, .3, 1), opacity .4s ease;
+  cursor: pointer;
+}
+.g-item:nth-child(even) { --rot: 2.2deg; }
+.g-item:nth-child(3n) { --rot: -1deg; }
+.g-item.is-active { transform: rotate(calc(var(--rot) * .25)) scale(1); opacity: 1; cursor: default; }
+.g-item::before {
+  content: ""; position: absolute; top: -12px; left: 50%; width: 84px; height: 24px; margin-left: -42px;
+  background: var(--tape); transform: rotate(-3deg); z-index: 1;
+}
+.g-item img { display: block; width: 100%; height: auto; background: var(--grid); border-radius: 1px; }
+.g-nav { display: flex; align-items: center; justify-content: center; gap: 14px; padding-inline: 16px; }
+.g-btn {
+  flex: 0 0 auto; width: 48px; height: 48px; border-radius: 50%; cursor: pointer;
+  background: var(--card); color: var(--ink); border: 2px solid var(--ink);
+  font: 700 1.35rem/1 var(--text); box-shadow: 0 3px 0 var(--ink);
+  transition: transform .1s ease, box-shadow .1s ease, opacity .2s ease;
+}
+.g-btn:active:not(:disabled) { transform: translateY(2px); box-shadow: 0 1px 0 var(--ink); }
+.g-btn:disabled { opacity: .3; cursor: default; }
+.g-btn:focus-visible, .g-dot:focus-visible { outline: 3px solid var(--tone); outline-offset: 3px; }
+.g-dots { display: flex; flex-wrap: wrap; justify-content: center; gap: 6px; max-width: 60%; }
+.g-dot {
+  width: 9px; height: 9px; padding: 0; border: 0; border-radius: 999px; cursor: pointer;
+  background: var(--rule); transition: width .3s ease, background-color .3s ease;
+}
+.g-dot[aria-current="true"] { width: 24px; background: var(--tone); }
 
 /* Buttons */
-.actions { display: grid; gap: 10px; margin-top: 4px; }
+.actions { display: grid; gap: 10px; margin-top: 6px; }
 .btn {
-  width: 100%; min-height: 54px; padding: 14px 20px; cursor: pointer;
-  border-radius: 12px; border: 2px solid var(--ink);
-  font: 700 1.05rem/1.2 var(--text);
+  width: 100%; min-height: 56px; padding: 14px 20px; cursor: pointer;
+  border-radius: 14px; border: 2px solid var(--ink);
+  font: 700 1.08rem/1.2 var(--text);
+  transition: transform .1s ease, box-shadow .1s ease;
 }
 a.btn { display: flex; align-items: center; justify-content: center; text-align: center; text-decoration: none; }
-.btn.primary { background: var(--ink); color: var(--paper); }
+.btn.primary { background: var(--ink); color: var(--paper); box-shadow: 0 4px 0 rgba(0, 0, 0, .28); }
+.btn.primary:active { transform: translateY(3px); box-shadow: 0 1px 0 rgba(0, 0, 0, .28); }
 .btn.ghost { background: transparent; color: var(--ink); border-color: var(--rule); }
-.btn.small { min-height: 44px; padding: 10px 16px; font-size: .95rem; width: auto; }
 .btn:focus-visible, .opt:focus-visible, .bar-back:focus-visible, .bar-clues:focus-visible, .linkbtn:focus-visible {
   outline: 3px solid var(--pen); outline-offset: 3px;
 }
@@ -178,59 +299,66 @@ a.btn { display: flex; align-items: center; justify-content: center; text-align:
   color: var(--ink-soft); font: 400 .95rem var(--text); text-decoration: underline; text-underline-offset: 3px;
 }
 
-/* Photos */
-.photos { display: grid; gap: 30px; padding-block: 12px 4px; }
-.photo {
-  margin: 0; position: relative; max-width: 100%;
-  background: var(--frame); padding: 10px 10px 12px;
-  box-shadow: 0 8px 20px var(--shadow), 0 1px 2px var(--shadow);
+/* Questions. Right answers in green, wrong ones in red, everywhere. */
+.question > .eyebrow {
+  align-self: flex-start; display: inline-flex; align-items: center; gap: 8px;
+  background: var(--tone-soft); color: var(--ink); padding: 5px 12px 5px 8px; border-radius: 999px;
 }
-.photo:nth-child(odd) { transform: rotate(-1.3deg); }
-.photo:nth-child(even) { transform: rotate(1.1deg); }
-.photo::before {
-  content: ""; position: absolute; top: -12px; left: 50%;
-  width: 86px; height: 24px; margin-left: -43px;
-  background: var(--tape); transform: rotate(-3deg);
-}
-.photo img { display: block; width: 100%; height: auto; background: var(--grid); }
-.photo figcaption { font-family: var(--hand); font-size: 1.4rem; line-height: 1.18; color: var(--frame-ink); padding: 10px 4px 0; }
-.strip {
-  display: flex; gap: 20px; overflow-x: auto; scroll-snap-type: x mandatory;
-  padding: 18px 6px 22px; margin-inline: -6px; overscroll-behavior-x: contain;
-}
-.strip .photo { flex: 0 0 82%; scroll-snap-align: center; }
-.swipe { font-family: var(--hand); font-size: 1.35rem; color: var(--pen); }
-
-/* Questions */
+.question > .eyebrow::before { content: ""; width: 14px; height: 14px; border-radius: 50%; background: var(--tone); }
 .opts { display: grid; gap: 10px; }
 .opt {
   position: relative; display: flex; gap: 12px; align-items: baseline; text-align: left;
-  min-height: 56px; padding: 14px 44px 14px 16px; cursor: pointer;
+  min-height: 58px; padding: 15px 46px 15px 16px; cursor: pointer;
   background: var(--card); color: var(--ink);
-  border: 1.5px solid var(--rule); border-radius: 12px;
+  border: 2px solid var(--rule); border-radius: 14px;
+  box-shadow: 0 3px 0 var(--rule);
   font: 400 1.06rem/1.35 var(--text);
+  transition: transform .1s ease, box-shadow .1s ease;
 }
-.opt-l { font-family: var(--hand); font-size: 1.45rem; line-height: 1; color: var(--ink-soft); min-width: 1.3em; }
+.opt:active:not(:disabled) { transform: translateY(2px); box-shadow: 0 1px 0 var(--rule); }
+.opt-l { font-family: var(--hand); font-size: 1.5rem; line-height: 1; color: var(--ink-soft); min-width: 1.3em; }
 .opt:disabled { cursor: default; }
-.opt:disabled:not(.right):not(.wrong) { opacity: .5; }
-.opt.wrong { opacity: .72; }
+/* Tints are layered over the card colour so they stay opaque, also on the green court. */
+.opt.wrong { border-color: var(--pen); background: linear-gradient(var(--pen-soft), var(--pen-soft)) var(--card); box-shadow: 0 3px 0 var(--pen-soft); }
 .opt.wrong .opt-t { text-decoration: line-through; text-decoration-color: var(--pen); text-decoration-thickness: 2px; }
+.opt.wrong .opt-l { color: var(--pen); }
+.opt.wrong::after {
+  content: "✗"; position: absolute; right: 16px; top: 50%;
+  transform: translateY(-50%) rotate(-6deg);
+  font-family: var(--hand); font-weight: 700; font-size: 1.9rem; color: var(--pen);
+}
 .opt.right {
-  border-color: transparent;
-  box-shadow: 0 0 0 2.5px var(--pen);
+  border-color: var(--ok); background: linear-gradient(var(--ok-soft), var(--ok-soft)) var(--card); box-shadow: 0 3px 0 var(--ok);
   border-radius: 255px 18px 225px 18px / 18px 225px 18px 255px;
 }
+.opt.right .opt-l { color: var(--ok); }
 .opt.right::after {
   content: "✓"; position: absolute; right: 14px; top: 50%;
   transform: translateY(-50%) rotate(8deg);
-  font-family: var(--hand); font-weight: 700; font-size: 2.1rem; color: var(--pen);
+  font-family: var(--hand); font-weight: 700; font-size: 2.2rem; color: var(--ok);
 }
-.feedback { font-family: var(--hand); font-size: 1.55rem; line-height: 1.2; color: var(--pen); min-height: 1.2em; }
+.feedback {
+  position: relative; background: var(--card); border: 2px solid var(--pen); border-radius: 16px;
+  padding: 12px 16px; font-family: var(--hand); font-size: 1.6rem; line-height: 1.18; color: var(--pen);
+  box-shadow: 0 4px 12px var(--shadow);
+}
+.feedback::before {
+  content: ""; position: absolute; top: -9px; left: 28px; width: 16px; height: 16px;
+  background: var(--card); border-left: 2px solid currentColor; border-top: 2px solid currentColor; transform: rotate(45deg);
+}
+.feedback:empty { display: none; }
+.feedback.ok { color: var(--ok); border-color: var(--ok); }
+/* Stronger than the screen entrance rules, so a new reply always bounces in. */
+.screen .feedback.say, .screen.enter.back .feedback.say { animation: say .35s cubic-bezier(.3, 1.5, .5, 1); animation-delay: 0s; }
+@keyframes say { from { opacity: 0; transform: translateY(-6px) scale(.96); } }
+.peek-hint { font-size: .9rem; color: var(--ink-soft); }
+.proof { display: grid; gap: 8px; }
+.proof-label { font-family: var(--hand); font-size: 1.5rem; line-height: 1.1; color: var(--ok); }
 
 /* Clues */
 .clue {
   display: flex; gap: 14px; align-items: center;
-  background: var(--card); border: 1.5px dashed var(--rule); border-radius: 14px; padding: 14px 16px;
+  background: var(--card); border: 2px dashed var(--tone); border-radius: 16px; padding: 14px 16px;
 }
 .clue > div { min-width: 0; }
 .clue-label { font-size: .75rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--ink-soft); }
@@ -244,11 +372,17 @@ a.btn { display: flex; align-items: center; justify-content: center; text-align:
 .g-green { background: var(--g-green); }
 .g-blue { background: var(--g-blue); }
 .g-pink { background: var(--g-pink); }
-.pop .gomet { animation: stick .55s cubic-bezier(.3, 1.6, .5, 1) both; }
-@keyframes stick { from { transform: scale(.2) rotate(-40deg); } to { transform: none; } }
+.screen .clue.pop, .screen.enter.back .clue.pop { animation: rise-fwd .45s ease-out backwards; animation-delay: .1s; }
+.pop .gomet { animation: stick .6s cubic-bezier(.3, 1.6, .5, 1) .15s backwards; }
+@keyframes stick { from { transform: scale(.2) rotate(-40deg); opacity: 0; } }
 .chuleta {
-  background: var(--card); border: 1.5px solid var(--rule); border-radius: 14px;
-  padding: 14px 16px; display: grid; gap: 10px;
+  position: relative; background: var(--card); color: var(--ink); border: 1.5px solid var(--rule); border-radius: 6px 16px 10px 14px;
+  padding: 18px 16px 14px; display: grid; gap: 10px; transform: rotate(-.6deg);
+  box-shadow: 0 6px 16px var(--shadow);
+}
+.chuleta::before {
+  content: ""; position: absolute; top: -11px; right: 26px; width: 70px; height: 20px;
+  background: var(--tape); transform: rotate(5deg);
 }
 .chuleta ol { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; }
 .chuleta li { display: flex; gap: 12px; align-items: center; }
@@ -257,27 +391,62 @@ a.btn { display: flex; align-items: center; justify-content: center; text-align:
 .chuleta .locked { color: var(--ink-soft); font-style: italic; }
 .chuleta .locked .gomet { background: transparent; border: 1.5px dashed var(--ink-soft); box-shadow: none; color: var(--ink-soft); }
 
+/* Pati: the whole page turns into a playground court with chalk lines. */
+body[data-screen="recreo"] {
+  background-color: var(--court);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 800' preserveAspectRatio='none'%3E%3Cg fill='none' stroke='white' stroke-opacity='.32' stroke-width='3'%3E%3Crect x='14' y='14' width='372' height='772'/%3E%3Cline x1='14' y1='400' x2='386' y2='400'/%3E%3Ccircle cx='200' cy='400' r='58'/%3E%3Cpath d='M118 14v136h164V14M118 786V650h164v136M140 150a60 60 0 0 0 120 0M140 650a60 60 0 0 1 120 0'/%3E%3C/g%3E%3C/svg%3E");
+  background-size: 100% 100%;
+  color: #fff;
+}
+body[data-screen="recreo"]::before, body[data-screen="recreo"] .bar { background: var(--court-bar); }
+body[data-screen="recreo"] .bar { border-bottom-color: rgba(255, 255, 255, .25); }
+body[data-screen="recreo"] .bar-back, body[data-screen="recreo"] .bar-label { color: #fff; }
+body[data-screen="recreo"] .bar-progress { background: var(--g-yellow); }
+.recreo { border-left-color: transparent; }
+.recreo > .eyebrow {
+  background: none; border: 2px dashed rgba(255, 255, 255, .8); color: #fff;
+  font: 700 1.6rem/1 var(--hand); letter-spacing: .02em; text-transform: none; padding: 6px 14px;
+}
+.recreo > .eyebrow::before { display: none; }
+.recreo h2 { color: #fff; font-family: var(--hand); font-size: 2.6rem; line-height: 1; text-shadow: 0 2px 0 rgba(0, 0, 0, .15); }
+.recreo .lead, .recreo .peek-hint { color: rgba(255, 255, 255, .88); }
+.recreo .btn.ghost { color: #fff; border-color: rgba(255, 255, 255, .6); }
+.recreo .btn.primary { background: var(--g-yellow); color: #3b2c00; border-color: #3b2c00; }
+.pati-art { display: grid; gap: 4px; margin-left: -6px; }
+.bell { font: 700 1.5rem/1 var(--hand); color: var(--g-yellow); transform-origin: left center; }
+.screen.enter .bell { animation: ring .9s .3s ease-in-out backwards; }
+@keyframes ring { 0% { opacity: 0; transform: scale(.6); } 20% { opacity: 1; transform: rotate(-8deg) scale(1.1); } 40% { transform: rotate(7deg); } 60% { transform: rotate(-5deg); } 80% { transform: rotate(3deg); } }
+.xarranca { width: 100%; max-width: 360px; height: auto; overflow: visible; }
+.xarranca .chalk { fill: none; stroke: rgba(255, 255, 255, .9); stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; }
+.xarranca text { fill: #fff; font: 700 22px var(--hand); text-anchor: middle; dominant-baseline: central; }
+.xarranca .stone { fill: var(--g-yellow); }
+.screen.enter .xarranca .chalk { stroke-dasharray: 600; animation: draw-long 1.2s ease-out backwards; }
+@keyframes draw-long { from { stroke-dashoffset: 600; } }
+.screen.enter .xarranca .stone { animation: hop 1s .9s cubic-bezier(.3, 1.4, .5, 1) backwards; }
+@keyframes hop { from { transform: translate(-90px, -30px); opacity: 0; } }
+
 /* Grade */
 .nota { align-items: center; text-align: center; }
 .stamp {
   display: inline-block; padding: 8px 18px; border: 4px double var(--pen); border-radius: 6px;
-  color: var(--pen); font: 700 1.3rem/1.1 var(--text); letter-spacing: .14em; text-transform: uppercase;
-  transform: rotate(-8deg); animation: stamp .45s cubic-bezier(.2, 1.4, .4, 1) .15s both;
+  color: var(--pen); font: 700 1.35rem/1.1 var(--text); letter-spacing: .14em; text-transform: uppercase;
+  transform: rotate(-8deg); animation: stamp .45s cubic-bezier(.2, 1.4, .4, 1) .3s both;
 }
 @keyframes stamp { from { opacity: 0; transform: rotate(-8deg) scale(1.9); } to { opacity: 1; transform: rotate(-8deg) scale(1); } }
 .grade {
-  font-family: var(--hand); font-weight: 700; font-size: 8rem; line-height: .85; color: var(--pen);
-  border-bottom: 3px double var(--pen); padding-inline: 18px;
+  font-family: var(--hand); font-weight: 700; font-size: 9rem; line-height: .85; color: var(--ok);
+  border-bottom: 3px double var(--ok); padding-inline: 18px;
 }
+.screen.enter .grade { animation: stick .8s cubic-bezier(.3, 1.6, .5, 1) .5s backwards; }
 .nota-text { font-size: 1.1rem; max-width: 30ch; }
 .sign { font-family: var(--hand); font-size: 1.5rem; color: var(--pen); }
 
 /* Prize */
 .vale {
   background: var(--card); border: 2px dashed var(--rule); border-radius: 16px;
-  padding: 18px; display: grid; gap: 14px;
+  padding: 18px; display: grid; gap: 14px; box-shadow: 0 6px 16px var(--shadow);
 }
-.vale-head { font-family: var(--hand); font-size: 1.6rem; color: var(--pen); line-height: 1; }
+.vale-head { font-family: var(--hand); font-size: 1.7rem; color: var(--pen); line-height: 1; }
 .scratch-wrap {
   position: relative; overflow: hidden; border-radius: 12px; min-height: 150px;
   display: grid; place-items: center; background: var(--paper); border: 1.5px solid var(--rule);
@@ -295,14 +464,8 @@ a.btn { display: flex; align-items: center; justify-content: center; text-align:
   background: var(--card); border: 1.5px solid var(--rule); border-radius: 14px;
   padding: 16px; display: grid; gap: 12px;
 }
-.code { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
-.code-word {
-  font-family: var(--hand); font-size: 1.8rem; line-height: 1.1;
-  background: var(--pen-soft); color: var(--ink); border-radius: 8px; padding: 4px 12px;
-  -webkit-user-select: all; user-select: all;
-}
 .letter {
-  font-family: var(--hand); font-size: 1.55rem; line-height: 1.28;
+  font-family: var(--hand); font-size: 1.6rem; line-height: 1.28;
   display: grid; gap: 12px; padding: 6px 0 4px;
 }
 .letter .sign { text-align: right; font-size: 1.8rem; }
@@ -311,11 +474,14 @@ a.btn { display: flex; align-items: center; justify-content: center; text-align:
 .downloads { display: grid; gap: 10px; }
 .dl-row { display: grid; gap: 4px; }
 .dl-status { font-size: .95rem; color: var(--ink-soft); min-height: 1.2em; }
-.film { display: block; width: 100%; max-width: 100%; border-radius: 12px; background: var(--ink); }
+.film { display: block; width: 100%; max-width: 100%; border-radius: 12px; background: #000; }
+
+/* Confetti pieces, thrown from a right answer and rained on the grade. */
+.confetti { position: fixed; inset: 0; pointer-events: none; z-index: 50; overflow: hidden; }
+.confetti i { position: absolute; width: 9px; height: 13px; margin: -6px 0 0 -4px; border-radius: 2px; }
 
 @media (prefers-reduced-motion: reduce) {
-  .screen.enter, .pop .gomet, .stamp { animation: none !important; }
-  .bar-progress, .scratch { transition: none; }
+  *, *::before, *::after { animation: none !important; transition: none !important; }
 }
 </style>
 </head>
@@ -339,12 +505,13 @@ a.btn { display: flex; align-items: center; justify-content: center; text-align:
   <!-- Cover -->
   <section class="screen cover" data-id="portada">
     <p class="eyebrow">Examen sorpresa · 28 de novembre de 2026</p>
-    <h1 tabindex="-1">Hui t'examines tu, Tiixer</h1>
+    <h1 tabindex="-1">Hui t'examines tu, <span class="hl">Tiixer<svg class="squiggle" viewBox="0 0 200 16" preserveAspectRatio="none" aria-hidden="true"><path d="M3 11 C 40 3, 70 15, 100 8 S 160 2, 197 10"/></svg></span></h1>
     <dl class="fields">
       <div><dt>Nom</dt><dd>Zaida</dd></div>
       <div><dt>Assignatura</dt><dd>Tu i jo</dd></div>
       <div><dt>Curs</dt><dd>La puta vida</dd></div>
       <div><dt>Corregix</dt><dd>Pau</dd></div>
+      <span class="sticker g-pink" aria-hidden="true">★</span>
     </dl>
     <div class="pen-note">
       <p>Quatre temes i quatre preguntes. Cada pregunta que encertes te dona una pista.</p>
@@ -354,69 +521,182 @@ a.btn { display: flex; align-items: center; justify-content: center; text-align:
   </section>
 
   <!-- Tema 1 -->
-  <section class="screen" data-id="t1" data-label="Tema 1 de 4" hidden>
-    <p class="eyebrow">Tema 1</p>
-    <h2 tabindex="-1">El principi</h2>
-    <p class="lead">Cuan jo vaig naixer tu ja estaves (uela).</p>
-    <div class="photos">
-      <figure class="photo"><img src="img/t1-a.jpg" width="720" height="456" loading="lazy" decoding="async" alt="Zaida de xicoteta en Pau acabat de naixer en braços"><figcaption>Jo acabava d'aplegar i tu ja me tenies en braços.</figcaption></figure>
-      <figure class="photo"><img src="img/t1-b.jpg" width="720" height="455" loading="lazy" decoding="async" alt="Els dos de xicotets en la cuna, entre peluches"><figcaption>Compartiem cuna, peluches i paciència. Bueno la paciència la tenia que tindre jo.</figcaption></figure>
-      <figure class="photo"><img src="img/t1-c.jpg" width="720" height="636" loading="lazy" decoding="async" alt="Els dos de xiquets, cara a cara"><figcaption>Encara que ahí si que me volies.</figcaption></figure>
+  <section class="screen tema" data-id="t1" data-tone="yellow" data-label="Tema 1 de 4" hidden>
+    <header class="tema-head">
+      <span class="tema-num" aria-hidden="true">1</span>
+      <div><p class="eyebrow">Tema 1 de 4</p><h2 tabindex="-1">El principi</h2></div>
+    </header>
+    <p class="note">Cuan jo vaig naixer tu ja estaves (uela).</p>
+    <div class="gallery" aria-label="Fotos del tema 1">
+      <div class="g-track" tabindex="0">
+        <figure class="g-item"><img src="img/t1-a.jpg" width="720" height="456" loading="lazy" decoding="async" alt="Zaida de xicoteta en Pau acabat de naixer en braços"></figure>
+        <figure class="g-item"><img src="img/t1-b.jpg" width="720" height="455" loading="lazy" decoding="async" alt="Els dos de xicotets en la cuna, entre peluches"></figure>
+        <figure class="g-item"><img src="img/t1-c.jpg" width="720" height="636" loading="lazy" decoding="async" alt="Els dos de xiquets, cara a cara"></figure>
+        <figure class="g-item"><img src="img/t1-d.jpg" width="720" height="459" loading="lazy" decoding="async" alt="Els dos de xicotets en la platja, sentats en una tovalla"></figure>
+        <figure class="g-item"><img src="img/t1-e.jpg" width="744" height="558" loading="lazy" decoding="async" alt="Zaida abraçant a Pau en un hotel, en un baló"></figure>
+        <figure class="g-item"><img src="img/t1-f.jpg" width="736" height="552" loading="lazy" decoding="async" alt="Els dos de xiquets al costat d'una muralla, Pau en ulleres de sol"></figure>
+        <figure class="g-item"><img src="img/t1-g.jpg" width="1000" height="750" loading="lazy" decoding="async" alt="Els dos de xiquets davant d'un mural de colors"></figure>
+      </div>
     </div>
     <div class="actions"><button class="btn primary" type="button" data-next>Contestar pregunta</button></div>
   </section>
-  <section class="screen question" data-id="q1" data-q="q1" data-label="Pregunta 1 de 4" data-next-label="Següent tema" hidden></section>
+  <section class="screen question" data-id="q1" data-q="q1" data-tone="yellow" data-label="Pregunta 1 de 4" data-next-label="Següent tema" hidden></section>
 
   <!-- Tema 2 -->
-  <section class="screen" data-id="t2" data-label="Tema 2 de 4" hidden>
-    <p class="eyebrow">Tema 2</p>
-    <h2 tabindex="-1">Disfrasos, cumples i festes</h2>
-    <p class="lead">Cumples, carnavals i abraços dels que apreten.</p>
-    <div class="photos">
-      <figure class="photo"><img src="img/t2-a.jpg" width="1000" height="750" loading="lazy" decoding="async" alt="Pau davant de la vela del seu tercer cumple i Zaida al costat, en les mans al pèl"><figcaption>El meu tercer cumple. Jo davant de la vela i tu pentinant-te per si de cas.</figcaption></figure>
-      <figure class="photo"><img src="img/t2-b.jpg" width="750" height="1000" loading="lazy" decoding="async" alt="Els dos disfrasats iguals, en estreles"><figcaption>Disfrasats iguals. Ja se veia que aniríem junts a tot arreu.</figcaption></figure>
-      <figure class="photo"><img src="img/t2-c.jpg" width="1000" height="750" loading="lazy" decoding="async" alt="Els dos abraçats, un poc més majors"><figcaption>Uns anys més tard, el mateix abraç.</figcaption></figure>
+  <section class="screen tema" data-id="t2" data-tone="green" data-label="Tema 2 de 4" hidden>
+    <header class="tema-head">
+      <span class="tema-num" aria-hidden="true">2</span>
+      <div><p class="eyebrow">Tema 2 de 4</p><h2 tabindex="-1">Disfrasos, cumples i festes</h2></div>
+    </header>
+    <p class="note">Cumples, cabalgates del ninot, falles, festes de disfrasos i tu i jo fent el payaso.</p>
+    <h3 class="sub-title">Cumples</h3>
+    <p class="sub-note">Fotos dels cumples on sempre nia algu que no te que bufar i bufa o algú ix fent el payaso en la foto.</p>
+    <div class="gallery" aria-label="Fotos de cumples">
+      <div class="g-track" tabindex="0">
+        <figure class="g-item"><img src="img/t2-a.jpg" width="1000" height="750" loading="lazy" decoding="async" alt="Pau davant de la vela del seu tercer cumple i Zaida al costat, en les mans al pèl"></figure>
+        <figure class="g-item"><img src="img/t2-d.jpg" width="1000" height="750" loading="lazy" decoding="async" alt="Tres xiquets en una taula de berenar de cumple"></figure>
+        <figure class="g-item"><img src="img/t2-e.jpg" width="1000" height="750" loading="lazy" decoding="async" alt="Xiquets abraçats al costat d'una taula en un bescuit"></figure>
+        <figure class="g-item"><img src="img/t2-f.jpg" width="1000" height="750" loading="lazy" decoding="async" alt="Els dos en una taula amb una tarta amb les veles del 54"></figure>
+        <figure class="g-item"><img src="img/t2-g.jpg" width="1000" height="750" loading="lazy" decoding="async" alt="Els dos al costat d'una tarta amb les veles del 90"></figure>
+        <figure class="g-item"><img src="img/t2-h.jpg" width="1000" height="750" loading="lazy" decoding="async" alt="Zaida davant d'una tarta amb la vela del 9 i Pau al costat"></figure>
+        <figure class="g-item"><img src="img/t2-i.jpg" width="1000" height="750" loading="lazy" decoding="async" alt="Zaida acostant una tarta amb vela a Pau"></figure>
+      </div>
+    </div>
+    <h3 class="sub-title">Disfrasos, falles i festes</h3>
+    <p class="sub-note">Jo crec que no queden temátiques o disfrasos que no mos hàgem posat (per cert que se sent al tindre a Spiderman de germà 😌)</p>
+    <div class="gallery" aria-label="Fotos de disfrasos, falles i festes">
+      <div class="g-track" tabindex="0">
+        <figure class="g-item"><img src="img/t2-b.jpg" width="750" height="1000" loading="lazy" decoding="async" alt="Els dos disfrasats iguals, en estreles"></figure>
+        <figure class="g-item"><img src="img/t2-j.jpg" width="750" height="1000" loading="lazy" decoding="async" alt="Zaida disfrasada de fada i Pau de Spiderman"></figure>
+        <figure class="g-item"><img src="img/t2-k.jpg" width="686" height="1000" loading="lazy" decoding="async" alt="Zaida disfrasada de reina i Pau d'indi, de la mà en un escenari"></figure>
+        <figure class="g-item"><img src="img/t2-l.jpg" width="1000" height="813" loading="lazy" decoding="async" alt="Xiquets en la cara pintada i disfrasos taronja, cridant"></figure>
+        <figure class="g-item"><img src="img/t2-m.jpg" width="750" height="1000" loading="lazy" decoding="async" alt="Zaida de fallera i Pau de faller, abraçats en el carrer"></figure>
+        <figure class="g-item"><img src="img/t2-n.jpg" width="1000" height="750" loading="lazy" decoding="async" alt="Zaida de fallera en banda i Pau abraçat a ella"></figure>
+        <figure class="g-item"><img src="img/t2-o.jpg" width="1000" height="750" loading="lazy" decoding="async" alt="Zaida en vestit roig abraçant a Pau en un saló"></figure>
+        <figure class="g-item"><img src="img/t2-c.jpg" width="1000" height="750" loading="lazy" decoding="async" alt="Els dos abraçats, un poc més majors"></figure>
+        <figure class="g-item"><img src="img/t2-p.jpg" width="720" height="434" loading="lazy" decoding="async" alt="Els dos rient en un sofà"></figure>
+      </div>
     </div>
     <div class="actions"><button class="btn primary" type="button" data-next>Contestar pregunta</button></div>
   </section>
-  <section class="screen question" data-id="q2" data-q="q2" data-label="Pregunta 2 de 4" data-next-label="Eixir al pati" hidden></section>
+  <section class="screen question" data-id="q2" data-q="q2" data-tone="green" data-label="Pregunta 2 de 4" data-next-label="Eixir al pati" hidden></section>
 
-  <!-- Pati: a bet that does not count towards the grade -->
-  <section class="screen question recreo" data-id="recreo" data-q="qp" data-label="Pati" data-next-label="Tornar a classe" hidden></section>
+  <!-- Pati: a bet that does not count towards the grade. The page turns into a playground. -->
+  <section class="screen question recreo" data-id="recreo" data-q="qp" data-label="Pati" data-next-label="Tornar a classe" hidden>
+    <div class="pati-art" aria-hidden="true">
+      <p class="bell">Riiiiing! 🔔</p>
+      <svg class="xarranca" viewBox="0 0 340 92">
+        <g class="chalk">
+          <rect x="8" y="26" width="40" height="40"/><rect x="48" y="26" width="40" height="40"/><rect x="88" y="26" width="40" height="40"/>
+          <rect x="128" y="6" width="40" height="40"/><rect x="128" y="46" width="40" height="40"/>
+          <rect x="168" y="26" width="40" height="40"/>
+          <rect x="208" y="6" width="40" height="40"/><rect x="208" y="46" width="40" height="40"/>
+          <path d="M248 6h18a40 40 0 0 1 0 80h-18z"/>
+          <circle cx="318" cy="64" r="13"/><path d="M305 64c8-6 18-6 26 0M318 51c-5 8-5 18 0 26"/>
+        </g>
+        <text x="28" y="46">1</text><text x="68" y="46">2</text><text x="108" y="46">3</text>
+        <text x="148" y="26">4</text><text x="148" y="66">5</text><text x="188" y="46">6</text>
+        <text x="228" y="26">7</text><text x="228" y="66">8</text><text x="270" y="46" style="font-size:18px">CEL</text>
+        <ellipse class="stone" cx="108" cy="56" rx="7" ry="5"/>
+      </svg>
+    </div>
+  </section>
 
   <!-- Tema 3 -->
-  <section class="screen" data-id="t3" data-label="Tema 3 de 4" hidden>
-    <p class="eyebrow">Tema 3</p>
-    <h2 tabindex="-1">Viatges</h2>
-    <p class="lead">En tu he aplegat lluny. Literalment.</p>
-    <p class="swipe">Pasa el dit pa vore'n més →</p>
-    <div class="strip" tabindex="0" aria-label="Fotos de viatges">
-      <figure class="photo"><img src="img/t3-a.jpg" width="978" height="804" loading="lazy" decoding="async" alt="Foto d'estudi del creuer, en Venècia de fondo"><figcaption>En el creuer, en Venècia de fondo. De cartó, pero conta.</figcaption></figure>
-      <figure class="photo"><img src="img/t3-b.jpg" width="1000" height="750" loading="lazy" decoding="async" alt="Els dos al costat de la finestra del barco, en la mar blava de nit"><figcaption>Des de la finestra del barco, en la mar de nit.</figcaption></figure>
-      <figure class="photo"><img src="img/t3-c.jpg" width="750" height="1000" loading="lazy" decoding="async" alt="Els dos al costat de la fita del quilòmetre 0 en Fisterra, en el far darrere"><figcaption>Quilòmetre 0 en Fisterra. La fi del món, i nosatros tan tranquils.</figcaption></figure>
-      <figure class="photo"><img src="img/t3-d.jpg" width="750" height="1000" loading="lazy" decoding="async" alt="Selfi dels dos davant de la muralla d'Àvila"><figcaption>Àvila: muralles, un sol que cremava i el teu braç de selfi profesional.</figcaption></figure>
-      <figure class="photo"><img src="img/t3-e.jpg" width="750" height="1000" loading="lazy" decoding="async" alt="Selfi dels dos davant d'un edifici de fusta, en gorro i chaqueta vaquera"><figcaption>Més amunt, en gorro i chaqueta vaquera.</figcaption></figure>
-      <figure class="photo"><img src="img/t3-f.jpg" width="750" height="1000" loading="lazy" decoding="async" alt="Els dos al costat de la mar a la posta de sol"><figcaption>I postes de sol que no s'obliden.</figcaption></figure>
+  <section class="screen tema" data-id="t3" data-tone="blue" data-label="Tema 3 de 4" hidden>
+    <header class="tema-head">
+      <span class="tema-num" aria-hidden="true">3</span>
+      <div><p class="eyebrow">Tema 3 de 4</p><h2 tabindex="-1">Viatges</h2></div>
+    </header>
+    <p class="note">En tu he aplegat lluny. Literalment.</p>
+    <h3 class="sub-title">Zaragosa</h3>
+    <p class="sub-note">Males caretes de prepubers teniem...</p>
+    <div class="gallery" aria-label="Fotos de Zaragosa">
+      <div class="g-track" tabindex="0">
+        <figure class="g-item"><img src="img/t3-g.jpg" width="1000" height="750" loading="lazy" decoding="async" alt="Selfi dels dos de adolescents en l'espill d'un hotel"></figure>
+        <figure class="g-item"><img src="img/t3-h.jpg" width="1000" height="750" loading="lazy" decoding="async" alt="La família davant dels Mallos de Riglos"></figure>
+        <figure class="g-item"><img src="img/t3-i.jpg" width="1000" height="750" loading="lazy" decoding="async" alt="Selfi dels dos davant dels Mallos de Riglos, Pau fent-li un bes"></figure>
+        <figure class="g-item"><img src="img/t3-j.jpg" width="1000" height="750" loading="lazy" decoding="async" alt="Selfi de la família en un passeig marítim"></figure>
+      </div>
+    </div>
+    <h3 class="sub-title">Galicia</h3>
+    <p class="sub-note">Ojala tornar a menjar zamburinyes dia si dia també</p>
+    <div class="gallery" aria-label="Fotos de Galicia">
+      <div class="g-track" tabindex="0">
+        <figure class="g-item"><img src="img/t3-k.jpg" width="750" height="1000" loading="lazy" decoding="async" alt="Selfi de la família davant de la mar a la posta de sol"></figure>
+        <figure class="g-item"><img src="img/t3-f.jpg" width="750" height="1000" loading="lazy" decoding="async" alt="Els dos al costat de la mar a la posta de sol"></figure>
+        <figure class="g-item"><img src="img/t3-l.jpg" width="750" height="1000" loading="lazy" decoding="async" alt="Selfi de la família davant d'una església de pedra"></figure>
+        <figure class="g-item"><img src="img/t3-c.jpg" width="750" height="1000" loading="lazy" decoding="async" alt="Els dos al costat de la fita del quilòmetre 0 en Fisterra, en el far darrere"></figure>
+        <figure class="g-item"><img src="img/t3-m.jpg" width="750" height="1000" loading="lazy" decoding="async" alt="Un plat de zamburinyes"></figure>
+      </div>
+    </div>
+    <h3 class="sub-title">Finlandia</h3>
+    <p class="sub-note">El primer viatge que vam fer tu i jo soles. Aci me vaig traure el C1 de fotografo (i vam sobreviure sense matarmos)</p>
+    <div class="gallery" aria-label="Fotos de Finlandia">
+      <div class="g-track" tabindex="0">
+        <figure class="g-item"><img src="img/t3-n.jpg" width="750" height="1000" loading="lazy" decoding="async" alt="Selfi dels dos en un carrer de Hèlsinki"></figure>
+        <figure class="g-item"><img src="img/t3-o.jpg" width="750" height="1000" loading="lazy" decoding="async" alt="Selfi dels dos en un carrer, Zaida rient"></figure>
+        <figure class="g-item"><img src="img/t3-p.jpg" width="750" height="1000" loading="lazy" decoding="async" alt="Zaida fent una cara graciosa en un parc"></figure>
+        <figure class="g-item"><img src="img/t3-q.jpg" width="750" height="1000" loading="lazy" decoding="async" alt="Selfi dels dos davant de la catedral de Hèlsinki"></figure>
+        <figure class="g-item"><img src="img/t3-r.jpg" width="750" height="1000" loading="lazy" decoding="async" alt="Selfi de tres en un carrer de vianants"></figure>
+        <figure class="g-item"><img src="img/t3-s.jpg" width="562" height="1000" loading="lazy" decoding="async" alt="Selfi dels dos davant d'una casa de fusta roja, Pau en gorro"></figure>
+        <figure class="g-item"><img src="img/t3-e.jpg" width="750" height="1000" loading="lazy" decoding="async" alt="Selfi dels dos davant d'un edifici de fusta, en gorro i chaqueta vaquera"></figure>
+      </div>
+    </div>
+    <h3 class="sub-title">Asturies</h3>
+    <p class="sub-note">El dicho que diu que tu tapuntes a un bombardero el feren especial pa tu, hasta en els meus amics ten has vingut</p>
+    <div class="gallery" aria-label="Fotos d'Asturies">
+      <div class="g-track" tabindex="0">
+        <figure class="g-item"><img src="img/t3-t.jpg" width="750" height="1000" loading="lazy" decoding="async" alt="Selfi dels dos dalt d'una muntanya"></figure>
+        <figure class="g-item"><img src="img/t3-u.jpg" width="750" height="1000" loading="lazy" decoding="async" alt="Els dos davant d'un llac de muntanya"></figure>
+        <figure class="g-item"><img src="img/t3-v.jpg" width="750" height="1000" loading="lazy" decoding="async" alt="Un grup d'amics en un mirador sobre la mar"></figure>
+        <figure class="g-item"><img src="img/t3-w.jpg" width="750" height="1000" loading="lazy" decoding="async" alt="Un caragol damunt d'una dessuadora negra"></figure>
+      </div>
+    </div>
+    <h3 class="sub-title">Creuer</h3>
+    <p class="sub-note">I l'ultim viatge que ferem (mal mareig)</p>
+    <div class="gallery" aria-label="Fotos del creuer">
+      <div class="g-track" tabindex="0">
+        <figure class="g-item"><img src="img/t3-a.jpg" width="978" height="804" loading="lazy" decoding="async" alt="Foto d'estudi del creuer, en Venècia de fondo"></figure>
+        <figure class="g-item"><img src="img/t3-x.jpg" width="1000" height="750" loading="lazy" decoding="async" alt="Selfi de la família en el pati del Palau Ducal de Venècia"></figure>
+        <figure class="g-item"><img src="img/t3-b.jpg" width="1000" height="750" loading="lazy" decoding="async" alt="Els dos al costat de la finestra del barco, en la mar blava de nit"></figure>
+        <figure class="g-item"><img src="img/t3-y.jpg" width="1000" height="750" loading="lazy" decoding="async" alt="Selfi de la família en la coberta del barco, en un canal"></figure>
+        <figure class="g-item"><img src="img/t3-z.jpg" width="750" height="1000" loading="lazy" decoding="async" alt="Selfi de la família davant del cartell de Montenegro"></figure>
+        <figure class="g-item"><img src="img/t3-aa.jpg" width="1000" height="750" loading="lazy" decoding="async" alt="Selfi de la família en el barco, en un poble de la costa de nit"></figure>
+        <figure class="g-item"><img src="img/t3-ab.jpg" width="750" height="1000" loading="lazy" decoding="async" alt="Selfi de la família davant d'un edifici blanc amb la bandera de Grècia"></figure>
+      </div>
     </div>
     <div class="actions"><button class="btn primary" type="button" data-next>Contestar pregunta</button></div>
   </section>
-  <section class="screen question" data-id="q3" data-q="q3" data-label="Pregunta 3 de 4" data-next-label="Últim tema" hidden></section>
+  <section class="screen question" data-id="q3" data-q="q3" data-tone="blue" data-label="Pregunta 3 de 4" data-next-label="Últim tema" hidden></section>
 
   <!-- Tema 4 -->
-  <section class="screen" data-id="t4" data-label="Tema 4 de 4" hidden>
-    <p class="eyebrow">Tema 4</p>
-    <h2 tabindex="-1">História recent</h2>
-    <p class="lead">De majors seguim igual: de la mà i rient-mos.</p>
-    <div class="photos">
-      <figure class="photo"><img src="img/t4-a.jpg" width="750" height="1000" loading="lazy" decoding="async" alt="Zaida en la banda de graduada en Magisteri de Primària, al costat de Pau"><figcaption>El dia que te vas graduar en Magisteri. Des d'eixe dia eres Tiixer, i hui te toca estar a l'atre costat de l'examen.</figcaption></figure>
-      <figure class="photo"><img src="img/t4-b.jpg" width="750" height="1000" loading="lazy" decoding="async" alt="Els dos en cadires penjants, agafats de la mà"><figcaption>De la mà, com cuan érem xicotets.</figcaption></figure>
-      <figure class="photo"><img src="img/t4-c.jpg" width="750" height="1000" loading="lazy" decoding="async" alt="Selfi a l'espill, els dos en albornoz"><figcaption>Albornoz, banyera i el teu signe de la victòria. Sabem disfrutar.</figcaption></figure>
-      <figure class="photo"><img src="img/t4-d.jpg" width="750" height="1000" loading="lazy" decoding="async" alt="Zaida rient-se mentres li toca la cara a Pau"><figcaption>Tu rient-te de mi, que és el teu esport preferit.</figcaption></figure>
-      <figure class="photo"><img src="img/t4-e.jpg" width="750" height="1000" loading="lazy" decoding="async" alt="Els dos arreglats en una escala del barco"><figcaption>I ben arreglats cuan toca. Com prompte.</figcaption></figure>
+  <section class="screen tema" data-id="t4" data-tone="pink" data-label="Tema 4 de 4" hidden>
+    <header class="tema-head">
+      <span class="tema-num" aria-hidden="true">4</span>
+      <div><p class="eyebrow">Tema 4 de 4</p><h2 tabindex="-1">História recent</h2></div>
+    </header>
+    <p class="note">De majors seguim igual: de la mà i rient-mos. (encara que de xicoteta me queies millor)</p>
+    <div class="gallery" aria-label="Fotos d'història recent">
+      <div class="g-track" tabindex="0">
+        <figure class="g-item"><img src="img/t4-f.jpg" width="562" height="1000" loading="lazy" decoding="async" alt="Selfi dels dos en un jardí, Zaida traent múscul"></figure>
+        <figure class="g-item"><img src="img/t4-g.jpg" width="750" height="1000" loading="lazy" decoding="async" alt="Selfi dels dos en un espill amb llums"></figure>
+        <figure class="g-item"><img src="img/t4-h.jpg" width="562" height="1000" loading="lazy" decoding="async" alt="Els dos fent morros en la grada d'un estadi"></figure>
+        <figure class="g-item"><img src="img/t4-i.jpg" width="750" height="1000" loading="lazy" decoding="async" alt="Els dos amb una amiga en un concert"></figure>
+        <figure class="g-item"><img src="img/t4-a.jpg" width="750" height="1000" loading="lazy" decoding="async" alt="Zaida en la banda de graduada en Magisteri de Primària, al costat de Pau"></figure>
+        <figure class="g-item"><img src="img/t4-j.jpg" width="750" height="1000" loading="lazy" decoding="async" alt="Selfi dels dos en un espill, vestits de negre"></figure>
+        <figure class="g-item"><img src="img/t4-k.jpg" width="481" height="1000" loading="lazy" decoding="async" alt="Selfi dels dos en mascareta, Pau portant una caixa al muscle"></figure>
+        <figure class="g-item"><img src="img/t4-l.jpg" width="665" height="668" loading="lazy" decoding="async" alt="Zaida vestida de fallera abraçant a Pau"></figure>
+        <figure class="g-item"><img src="img/t4-m.jpg" width="1000" height="750" loading="lazy" decoding="async" alt="Pau fent-li un bes a Zaida en una cabina de la nòria, amb purpurina a la cara"></figure>
+        <figure class="g-item"><img src="img/t4-b.jpg" width="750" height="1000" loading="lazy" decoding="async" alt="Els dos en cadires penjants, agafats de la mà"></figure>
+        <figure class="g-item"><img src="img/t4-c.jpg" width="750" height="1000" loading="lazy" decoding="async" alt="Selfi a l'espill, els dos en albornoz"></figure>
+        <figure class="g-item"><img src="img/t4-d.jpg" width="750" height="1000" loading="lazy" decoding="async" alt="Zaida rient-se mentres li toca la cara a Pau"></figure>
+        <figure class="g-item"><img src="img/t4-e.jpg" width="750" height="1000" loading="lazy" decoding="async" alt="Els dos arreglats en una escala del barco"></figure>
+      </div>
     </div>
     <div class="actions"><button class="btn primary" type="button" data-next>Contestar pregunta</button></div>
   </section>
-  <section class="screen question" data-id="q4" data-q="q4" data-label="Pregunta 4 de 4" data-next-label="Anar a l'examen final" hidden></section>
+  <section class="screen question" data-id="q4" data-q="q4" data-tone="pink" data-label="Pregunta 4 de 4" data-next-label="Anar a l'examen final" hidden></section>
 
   <!-- Examen final -->
   <section class="screen question" data-id="q5" data-q="q5" data-label="Examen final" data-next-label="Vore la nota" hidden></section>
@@ -449,15 +729,17 @@ a.btn { display: flex; align-items: center; justify-content: center; text-align:
         <p><a id="prize-link" href="#" target="_blank" rel="noopener"></a></p>
         <div class="box">
           <h3>Pa guardar-ho</h3>
-          <video class="film" id="film" controls playsinline preload="metadata" hidden></video>
+          <video class="film" id="film" controls playsinline preload="none" poster="img/film-poster.jpg" hidden></video>
           <div class="downloads" id="downloads"></div>
           <p class="dl-status" id="dl-status" aria-live="polite"></p>
         </div>
         <div class="letter">
-          <p>Felicitats, Tiixer.</p>
-          <p>Me vas tindre en braços abans de que jo m'enterara de res, i des de llavors no has parat de cuidar-me (encara que ara te diga que no te soporte). En tu he anat del quilòmetre 0 de Fisterra fins a Finlandia, i no se m'ocurrix millor companya de viatge.</p>
+          <p>Felicitats, Tiixer!</p>
+          <p>Cuan jo vaig naixer tu ja estaves ahí, i des de la cuna que no me deixes en pau. Hem compartit cumples (encara no sé qui va bufar aquella vela), falles, disfrasos de tot tipo i mes payasades de les que caben en esta web.</p>
+          <p>Després vingueren els viatges: Zaragosa en males caretes, Galicia i les zamburinyes, Finlandia tu i jo soles (i tu preguntant pels billets de tren per que el meu inglés no donava pa mes), Asturies colant-te en el viatge dels meus amics i el creuer, mareig incluit. No se m'ocurrix millor companya de viatge.</p>
+          <p>Ja sé que últimament te dic molt que no te soporte. Mentira. Bueno, un poc veritat.</p>
           <p id="letter-plan"></p>
-          <p>T'estime molt.</p>
+          <p>T'estime molt, uela.</p>
           <p class="sign">Pau</p>
           <p class="ps">PD: Has aprovat, pero no t'acostumes.</p>
         </div>
@@ -477,13 +759,15 @@ a.btn { display: flex; align-items: center; justify-content: center; text-align:
     title: 'Un menú degustació pa dos en…',
     name: 'Frisone',
     place: 'Restaurant de la guía Michelin · Elx',
+    // From the Smartbox purchase of 28 November 2026 ("Sabor mediterráneo: 1 menú para 2").
+    // The voucher number and code stay out of this public page: Pau sends the voucher himself.
     facts: [
-      'Menú mediterrani pa tu i pa Enrique: snacks, entrants, dos principals, prepostre, postre i vi.',
-      'Sopars divendres i dissabte; dinars de dijous a diumenge.',
-      'Reserveu per telèfon en el 965 451 197. El val te l\'envie jo a part i dura 39 mesos.'
+      'Menú pa tu i pa Enrique: còctel de benvinguda, 2 snacks, 5 entrants, 2 principals, prepostre, postre i una botella de vi.',
+      'Reserveu per telèfon en el 965 451 197 i digueu que teniu una Smartbox.',
+      'El val te l\'envie jo a part i el podeu gastar fins al 28 de febrer de 2030.'
     ],
     link: { href: 'https://www.restaurantefrisone.com/', text: 'Vore el restaurant' },
-    letterPlan: 'Enguany el pla és pa tu i pa Enrique: arreglar-vos, sentar-vos i disfrutar de cada plat (i que Enrique no se quede en fam).'
+    letterPlan: 'Enguany no hi ha bizum: el pla és pa tu i pa Enrique. Arreglar-vos, anar a Elx i menjar com uns senyors (i que Enrique no se quede en fam).'
   };
 
   // Files offered at the end. Each: { path, filename, label }.
@@ -500,6 +784,7 @@ a.btn { display: flex; align-items: center; justify-content: center; text-align:
     'Hi han molts plats xicotets, Enrique igual se queda en fam.'
   ];
   const GOMETS = ['g-yellow', 'g-green', 'g-blue', 'g-pink'];
+  const CONFETTI = ['#f2b705', '#2e9e4f', '#2b74d1', '#e2508a', '#cc2c24'];
 
   // q1 to q5 count towards the grade (2 points each); qp is the Pati bet and does not.
   const QUESTIONS = {
@@ -515,21 +800,23 @@ a.btn { display: flex; align-items: center; justify-content: center; text-align:
     q2: {
       eyebrow: 'Pregunta 2 · 2 punts', clue: 1,
       text: 'Quina mitica frase vaig dir en el meu 3er cumple?',
+      // Shown once solved: the home video of that birthday.
+      video: { src: 'files/no-he-bufat-jo.mp4', poster: 'img/t2-video.jpg', label: 'Ací la prova:' },
       options: [
-        { t: 'No he bufat jo!', ok: true, r: 'Eixa mateixa. Una frase pa la història.' },
+        { t: 'No he bufat jo!', ok: true, r: 'Aixina es, era un incomprendido.' },
         { t: 'Amunt Valencia! 🦇', r: 'Eixa la dic ara. En tres anys encara no.' },
-        { t: 'Pedro Sanchez hijo de puta!', r: 'En tres anys encara no sabia ni qui era.' }
+        { t: 'Pedro Sanchez hijo de puta!', r: 'Tota la culpa del PSOE, pero esta no es la correcta.' }
       ]
     },
     qp: {
       eyebrow: 'Pati', clue: null, chuleta: 2, prevLabel: 'Arrere',
       text: 'En dos pistes, què apostes?',
-      lead: 'Esta no puntua. És pa vore per on vas.',
+      lead: 'Esta no conta, es pa vore com ho dus.',
       options: [
-        { t: 'Un viatge a Marruecos', r: 'Fred, fred. Marruecos pa atra volta.' },
-        { t: 'Una nit de hotel', r: 'Templat, pero no.' },
-        { t: 'Algo de menjar', ok: true, r: 'Vas bé. Pero de menjar n\'hi ha de moltes classes.' },
-        { t: 'Un taller de cerámica', r: 'Fred. Arreglats pa mancharvos de fang? No.' }
+        { t: 'Un viatge a Marruecos', r: 'Frio, frio, a Enrique li pot entrar algo allí.' },
+        { t: 'Una nit de hotel', r: 'Ei clar que te penses que soc ric o que?' },
+        { t: 'Algo de menjar', ok: true, r: 'Vas bé. Pero de menjar poden ser moltes coses...' },
+        { t: 'Un taller de cerámica', r: 'Enserio? Que aburriment.' }
       ]
     },
     q3: {
@@ -554,8 +841,8 @@ a.btn { display: flex; align-items: center; justify-content: center; text-align:
       eyebrow: 'Examen final · 2 punts', clue: null, chuleta: 4, prevLabel: 'Arrere',
       text: 'En les quatre pistes, què és el teu regal?',
       options: [
-        { t: 'Una nit de hotel amb SPA incluit', r: 'Templat, pero no. Repassa la pista 4.' },
-        { t: 'Un creuer per Marruecos', r: 'Ojalà. Repassa la pista 3.' },
+        { t: 'Una nit de hotel amb SPA incluit', r: 'Ja te he dit que no soc ric...' },
+        { t: 'Un creuer per Marruecos', r: 'Atra volta Marruecos? Después te queixes dels inmigrants.' },
         { t: 'Un menú degustació per a dos en un restaurant de la guía Michelin', ok: true, r: 'Eixa és! Ara, la nota.' },
         { t: 'Un bizum de 100€ com sempre (era tot un paripé)', r: 'Paripé el teu. Enguany no hi ha bizum.' }
       ]
@@ -567,7 +854,14 @@ a.btn { display: flex; align-items: center; justify-content: center; text-align:
   const load = () => {
     try {
       const s = JSON.parse(localStorage.getItem(KEY));
-      if (s && typeof s.i === 'number' && s.q && typeof s.q === 'object') return Object.assign(blank(), s);
+      if (s && typeof s.i === 'number' && s.q && typeof s.q === 'object') {
+        // States saved before `first` existed never had taps after solving, so fix it now,
+        // before any new tap can grow `tried`.
+        Object.values(s.q).forEach(st => {
+          if (st && st.done && st.first == null) st.first = Array.isArray(st.tried) && st.tried.length === 1;
+        });
+        return Object.assign(blank(), s);
+      }
     } catch (e) { /* storage unavailable */ }
     return blank();
   };
@@ -579,6 +873,7 @@ a.btn { display: flex; align-items: center; justify-content: center; text-align:
   const screens = Array.from(document.querySelectorAll('.screen'));
   const bar = $('#bar');
   const LETTERS = ['a)', 'b)', 'c)', 'd)'];
+  const reduceMotion = () => matchMedia('(prefers-reduced-motion: reduce)').matches;
 
   const el = (tag, cls, text) => {
     const n = document.createElement(tag);
@@ -586,6 +881,114 @@ a.btn { display: flex; align-items: center; justify-content: center; text-align:
     if (text != null) n.textContent = text;
     return n;
   };
+
+  // Confetti: a burst from a point (a right answer) or a rain from the top (the grade).
+  function confetti(x, y, n, rain) {
+    if (reduceMotion() || typeof Element.prototype.animate !== 'function') return;
+    const layer = el('div', 'confetti');
+    document.body.append(layer);
+    const w = window.innerWidth;
+    for (let k = 0; k < n; k++) {
+      const p = el('i');
+      p.style.background = CONFETTI[k % CONFETTI.length];
+      if (k % 3 === 0) p.style.borderRadius = '50%';
+      const sx = rain ? Math.random() * w : x;
+      const sy = rain ? -20 - Math.random() * 120 : y;
+      p.style.left = sx + 'px';
+      p.style.top = sy + 'px';
+      layer.append(p);
+      const a = Math.random() * Math.PI * 2;
+      const v = 70 + Math.random() * 110;
+      const dx = rain ? (Math.random() - .5) * 120 : Math.cos(a) * v;
+      const dy = rain ? window.innerHeight + 160 : Math.sin(a) * v - 70;
+      const spin = (Math.random() - .5) * 900;
+      p.animate(rain
+        ? [{ transform: 'translate(0, 0) rotate(0deg)' }, { transform: `translate(${dx}px, ${dy}px) rotate(${spin}deg)` }]
+        : [
+            { transform: 'translate(0, 0) rotate(0deg)', opacity: 1 },
+            { transform: `translate(${dx}px, ${dy}px) rotate(${spin / 2}deg)`, opacity: 1, offset: .5 },
+            { transform: `translate(${dx * 1.25}px, ${dy + 190}px) rotate(${spin}deg)`, opacity: 0 }
+          ],
+        { duration: rain ? 2200 + Math.random() * 1600 : 1100 + Math.random() * 500, delay: rain ? Math.random() * 600 : 0, easing: rain ? 'linear' : 'cubic-bezier(.2, .7, .3, 1)', fill: 'forwards' });
+    }
+    setTimeout(() => layer.remove(), rain ? 4600 : 1800);
+  }
+  const burstFrom = node => {
+    const r = node.getBoundingClientRect();
+    confetti(r.left + r.width * .8, r.top + r.height / 2, 30, false);
+  };
+
+  // Photo galleries: swipe, tap a neighbour, or use the arrows and dots.
+  function initGallery(g) {
+    const track = $('.g-track', g);
+    const items = Array.from(track.children);
+    items.forEach(it => {
+      const img = $('img', it);
+      const w = Number(img.getAttribute('width')), h = Number(img.getAttribute('height'));
+      if (w && h) it.style.setProperty('--ar', (w / h).toFixed(4));
+    });
+    const nav = el('div', 'g-nav');
+    const prev = el('button', 'g-btn', '←');
+    prev.type = 'button';
+    prev.setAttribute('aria-label', 'Foto anterior');
+    const next = el('button', 'g-btn', '→');
+    next.type = 'button';
+    next.setAttribute('aria-label', 'Foto següent');
+    const dots = el('div', 'g-dots');
+    const live = el('p', 'sr-only');
+    live.setAttribute('aria-live', 'polite');
+    let active = -1;
+    const center = it => it.offsetLeft + it.offsetWidth / 2;
+    const go = k => {
+      k = Math.max(0, Math.min(items.length - 1, k));
+      track.scrollTo({ left: center(items[k]) - track.clientWidth / 2, behavior: reduceMotion() ? 'auto' : 'smooth' });
+    };
+    items.forEach((it, k) => {
+      const d = el('button', 'g-dot');
+      d.type = 'button';
+      d.setAttribute('aria-label', 'Foto ' + (k + 1) + ' de ' + items.length);
+      d.addEventListener('click', () => go(k));
+      dots.append(d);
+      it.addEventListener('click', () => { if (k !== active) go(k); });
+    });
+    nav.append(prev, dots, next);
+    g.append(nav, live);
+
+    function update(force) {
+      if (!track.clientWidth) return;
+      const mid = track.scrollLeft + track.clientWidth / 2;
+      let best = 0, dist = Infinity;
+      items.forEach((it, k) => {
+        const d = Math.abs(center(it) - mid);
+        if (d < dist) { dist = d; best = k; }
+      });
+      if (best === active && !force) return;
+      active = best;
+      items.forEach((it, k) => it.classList.toggle('is-active', k === best));
+      Array.from(dots.children).forEach((d, k) => d.setAttribute('aria-current', String(k === best)));
+      prev.disabled = best === 0;
+      next.disabled = best === items.length - 1;
+      live.textContent = 'Foto ' + (best + 1) + ' de ' + items.length;
+    }
+    // Side padding lets the first and the last photo sit in the middle.
+    function layout() {
+      if (!track.clientWidth) return;
+      track.style.paddingLeft = Math.max(16, (track.clientWidth - items[0].offsetWidth) / 2) + 'px';
+      track.style.paddingRight = Math.max(16, (track.clientWidth - items[items.length - 1].offsetWidth) / 2) + 'px';
+      update(true);
+    }
+    let raf = 0;
+    track.addEventListener('scroll', () => {
+      if (!raf) raf = requestAnimationFrame(() => { raf = 0; update(false); });
+    }, { passive: true });
+    prev.addEventListener('click', () => go(active - 1));
+    next.addEventListener('click', () => go(active + 1));
+    track.addEventListener('keydown', e => {
+      if (e.key === 'ArrowRight') { e.preventDefault(); go(active + 1); }
+      else if (e.key === 'ArrowLeft') { e.preventDefault(); go(active - 1); }
+    });
+    g._layout = layout;
+  }
 
   const clueCollected = k => {
     const id = 'q' + (k + 1);
@@ -626,14 +1029,32 @@ a.btn { display: flex; align-items: center; justify-content: center; text-align:
     data.options.forEach((o, j) => {
       const b = el('button', 'opt');
       b.type = 'button';
+      b.style.setProperty('--k', j);
       b.append(el('span', 'opt-l', LETTERS[j]), el('span', 'opt-t', o.t));
-      b.addEventListener('click', () => answer(sec, j));
+      b.addEventListener('click', () => answer(sec, j, b));
       opts.append(b);
     });
     sec.append(opts);
     const fb = el('p', 'feedback');
     fb.setAttribute('aria-live', 'polite');
     sec.append(fb);
+    if (data.video) {
+      const proof = el('div', 'proof');
+      proof.hidden = true;
+      const v = el('video', 'film');
+      v.controls = true;
+      v.playsInline = true;
+      v.preload = 'none';
+      v.poster = data.video.poster;
+      v.src = data.video.src;
+      proof.append(el('p', 'proof-label', data.video.label), v);
+      sec.append(proof);
+    }
+    const hint = el('p', 'peek-hint', id === 'qp'
+      ? 'Pots tocar les atres respostes pa vore que posa.'
+      : 'Pots tocar les atres respostes pa vore que posa. La nota ja no canvia.');
+    hint.hidden = true;
+    sec.append(hint);
     if (data.clue != null) {
       const k = data.clue;
       const clue = el('div', 'clue');
@@ -663,10 +1084,16 @@ a.btn { display: flex; align-items: center; justify-content: center; text-align:
       const tried = st.tried.includes(j);
       b.classList.toggle('right', tried && !!data.options[j].ok);
       b.classList.toggle('wrong', tried && !data.options[j].ok);
-      b.disabled = st.done || tried;
+      // Once solved, every option stays tappable so its reply can be read.
+      b.disabled = !st.done && tried;
     });
-    const last = st.tried[st.tried.length - 1];
-    $('.feedback', sec).textContent = last != null ? data.options[last].r : '';
+    const last = st.shown != null ? st.shown : st.tried[st.tried.length - 1];
+    const fb = $('.feedback', sec);
+    fb.textContent = last != null ? data.options[last].r : '';
+    fb.classList.toggle('ok', last != null && !!data.options[last].ok);
+    $('.peek-hint', sec).hidden = !st.done;
+    const proof = $('.proof', sec);
+    if (proof) proof.hidden = !st.done;
     const clue = $('.clue', sec);
     if (clue) {
       clue.hidden = !st.done;
@@ -675,25 +1102,52 @@ a.btn { display: flex; align-items: center; justify-content: center; text-align:
     $('[data-next]', sec).hidden = !st.done;
   }
 
-  function answer(sec, j) {
+  function sayAgain(sec) {
+    const fb = $('.feedback', sec);
+    fb.classList.remove('say');
+    void fb.offsetWidth;
+    fb.classList.add('say');
+  }
+
+  function answer(sec, j, btn) {
     const st = qState(sec.dataset.q);
-    if (st.done || st.tried.includes(j)) return;
-    st.tried.push(j);
     const ok = !!QUESTIONS[sec.dataset.q].options[j].ok;
-    if (ok) st.done = true;
+    if (st.done) {
+      // Already solved: just show this option's reply; the grade is fixed in st.first.
+      if (!st.tried.includes(j)) st.tried.push(j);
+      st.shown = j;
+      save();
+      renderQuestion(sec, false);
+      sayAgain(sec);
+      return;
+    }
+    if (st.tried.includes(j)) return;
+    st.tried.push(j);
+    if (ok) {
+      st.done = true;
+      st.first = st.tried.length === 1;
+    }
     save();
     renderQuestion(sec, ok);
+    sayAgain(sec);
     updateBar();
+    if (!reduceMotion() && typeof btn.animate === 'function') {
+      btn.animate(ok
+        ? [{ transform: 'scale(1)' }, { transform: 'scale(1.05)' }, { transform: 'scale(1)' }]
+        : [{ transform: 'translateX(0)' }, { transform: 'translateX(-8px)' }, { transform: 'translateX(7px)' }, { transform: 'translateX(-4px)' }, { transform: 'translateX(0)' }],
+        { duration: ok ? 420 : 360, easing: 'ease-out' });
+    }
     if (ok) {
+      burstFrom(btn);
       const target = $('.clue', sec) || $('[data-next]', sec);
-      requestAnimationFrame(() => target.scrollIntoView({ behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block: 'center' }));
+      setTimeout(() => target.scrollIntoView({ behavior: reduceMotion() ? 'auto' : 'smooth', block: 'center' }), 450);
     }
   }
 
   // Grade
   function renderNota() {
     const ids = ['q1', 'q2', 'q3', 'q4', 'q5'];
-    const firstTry = ids.filter(id => state.q[id] && state.q[id].done && state.q[id].tried.length === 1).length;
+    const firstTry = ids.filter(id => state.q[id] && state.q[id].done && state.q[id].first).length;
     const n = firstTry * 2;
     $('#nota-text').textContent = n === 10
       ? 'Deu de deu a la primera. Ni jo ho haguera fet millor.'
@@ -823,6 +1277,7 @@ a.btn { display: flex; align-items: center; justify-content: center; text-align:
     if (!animate) canvas.hidden = true;
     $('#reveal-all').hidden = true;
     $('#after').hidden = false;
+    if (animate) burstFrom($('#scratch-wrap'));
   }
 
   (function wireScratch() {
@@ -909,10 +1364,15 @@ a.btn { display: flex; align-items: center; justify-content: center; text-align:
 
   function show(i, opts = {}) {
     i = Math.max(0, Math.min(i, maxReachable()));
+    const back = i < state.i;
     screens.forEach((s, k) => { s.hidden = k !== i; });
+    document.querySelectorAll('video').forEach(v => { if (!v.paused) v.pause(); });
     state.i = i;
     save();
     const s = screens[i];
+    document.body.dataset.screen = s.dataset.id;
+    if (s.dataset.tone) document.body.dataset.tone = s.dataset.tone;
+    else delete document.body.dataset.tone;
     if (s.dataset.q) renderQuestion(s, false);
     s.querySelectorAll('[data-chuleta]').forEach(box => fillChuleta(box, Number(box.dataset.chuleta)));
     if (s.dataset.id === 'nota') renderNota();
@@ -921,12 +1381,16 @@ a.btn { display: flex; align-items: center; justify-content: center; text-align:
     $('#clues-btn').setAttribute('aria-expanded', 'false');
     updateBar();
     window.scrollTo(0, 0);
+    s.querySelectorAll('.gallery').forEach(g => g._layout && g._layout());
     if (!opts.instant) {
-      s.classList.remove('enter');
+      s.classList.remove('enter', 'back');
+      Array.from(s.children).forEach((c, k) => c.style.setProperty('--d', Math.min(k, 8)));
       void s.offsetWidth;
       s.classList.add('enter');
+      if (back) s.classList.add('back');
       const h = s.querySelector('h1, h2');
       if (h) h.focus({ preventScroll: true });
+      if (s.dataset.id === 'nota') setTimeout(() => confetti(0, 0, 90, true), 600);
     }
   }
 
@@ -948,8 +1412,17 @@ a.btn { display: flex; align-items: center; justify-content: center; text-align:
     panel.hidden = !panel.hidden;
     $('#clues-btn').setAttribute('aria-expanded', String(!panel.hidden));
   });
+  let resizeRaf = 0;
+  window.addEventListener('resize', () => {
+    if (resizeRaf) return;
+    resizeRaf = requestAnimationFrame(() => {
+      resizeRaf = 0;
+      screens[state.i].querySelectorAll('.gallery').forEach(g => g._layout && g._layout());
+    });
+  });
 
   // Boot
+  document.querySelectorAll('.gallery').forEach(initGallery);
   document.querySelectorAll('.question').forEach(buildQuestion);
   fillPrize();
   show(state.i, { instant: true });
