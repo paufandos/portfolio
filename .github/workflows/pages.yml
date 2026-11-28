@@ -30,13 +30,12 @@ jobs:
       # Visual baselines are captured on macOS, so CI runs the end-to-end checks only.
       - run: npm run test:e2e
 
-  deploy:
+  # Upload and deploy run in separate jobs, as in GitHub's Pages template: deploying in the
+  # same job right after the upload can fail because the new artifact is not listed yet.
+  build:
     if: github.ref == 'refs/heads/main'
     needs: test
     runs-on: ubuntu-latest
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - uses: actions/checkout@v4
       - name: Collect site files
@@ -63,5 +62,13 @@ jobs:
       - uses: actions/upload-pages-artifact@v5
         with:
           path: _site
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
       - id: deployment
         uses: actions/deploy-pages@v5
